@@ -1,0 +1,56 @@
+name: idz
+description: IDz app
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_form_builder: ^9.1.0
+  form_builder_validators: ^9.0.0
+  get: ^4.6.5
+  google_fonts: ^4.0.4
+  intl: ^0.18.1
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  keyboard_dismisser: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.3.3
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/images/
+    - assets/fonts/
+
+  fonts:
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Black.ttf
+          weight: 900
+        - asset: assets/fonts/NotoSansJP-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/NotoSansJP-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSansJP-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansJP-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansJP-Light.ttf
+          weight: 300
+        - asset: assets/fonts/NotoSansJP-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/NotoSansJP-Thin.ttf
+          weight: 100
