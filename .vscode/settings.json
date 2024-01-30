@@ -1,7 +1,7 @@
 {
   "nuxt.isNuxtApp": false,
-  "dart.sdkPath": "${userHome}/.asdf/installs/flutter/3.16.7-stable",
-  "dart.flutterSdkPath": "${userHome}/.asdf/installs/flutter/3.16.7-stable",
+  "dart.sdkPath": "/User/fumi/.asdf/installs/flutter/3.16.7-stable",
+  "dart.flutterSdkPath": "/User/fumi/.asdf/installs/flutter/3.16.7-stable",
   "cSpell.words": [
     "Admob",
     "ARGB",
@@ -25,6 +25,7 @@
     "nobishiroboard",
     "Noto",
     "openapi",
+    "Reorderable",
     "RGBO",
     "Simform",
     "SSSZ",

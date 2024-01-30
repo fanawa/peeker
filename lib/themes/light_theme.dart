@@ -46,6 +46,7 @@ TextStyle appBarIconActiveLabelStyle = TextStyle(
 ThemeData getLightTheme(BuildContext context) {
   final ThemeData theme = Theme.of(context);
   return ThemeData(
+    useMaterial3: true,
     primaryColor: primaryColor,
     colorScheme: theme.colorScheme.copyWith(
       secondary: accentColor,
@@ -57,7 +58,7 @@ ThemeData getLightTheme(BuildContext context) {
       centerTitle: true,
       toolbarHeight: 60,
       titleTextStyle: TextStyle(
-        color: accentColor,
+        color: primaryColor,
         fontSize: 16,
         fontFamily: 'NotoSansJP',
       ),
@@ -99,6 +100,19 @@ ThemeData getLightTheme(BuildContext context) {
         fontFamily: 'NotoSansJP',
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      labelTextStyle: MaterialStateProperty.all(
+        const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'NotoSansJP',
+          color: Colors.black,
+        ),
+      ),
+      indicatorShape: const CircleBorder(),
+      indicatorColor: Colors.black12,
+      surfaceTintColor: Colors.grey[100],
+    ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
@@ -125,6 +139,7 @@ ThemeData getLightTheme(BuildContext context) {
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
+      fillColor: Colors.grey[100],
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: primaryColor),
       ),
