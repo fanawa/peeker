@@ -15,6 +15,7 @@ class Item implements Base {
     this.url,
     this.description,
     this.fileName,
+    this.displayOrder,
     this.isarUpdatedAt,
     this.isarCreatedAt,
     this.isarDeletedAt,
@@ -26,6 +27,7 @@ class Item implements Base {
   String? url;
   String? description;
   String? fileName;
+  int? displayOrder;
   @override
   DateTime? isarCreatedAt;
   @override

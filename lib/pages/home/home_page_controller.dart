@@ -110,37 +110,7 @@ class HomePageController extends GetxController {
   //  Isar
   //*/
 
-  // Item 追加
-  Future<void> addItem(
-    String name,
-    String? phoneNumber,
-    String? url,
-    String? description,
-    String? fileName,
-  ) async {
-    final Isar isar = await isarProvider();
-    final Item input = Item()
-      ..name = name
-      ..phoneNumber = phoneNumber ?? ''
-      ..url = url ?? ''
-      ..description = description ?? ''
-      ..fileName = fileName ?? ''
-      ..isarCreatedAt = DateTime.now()
-      ..isarUpdatedAt = DateTime.now();
-    try {
-      await isar.writeTxn(
-        () async {
-          await isar.items.put(input);
-        },
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not create Item client Api: $e');
-      }
-      rethrow;
-    }
-  }
-
+  /// Item データ取得
   Future<List<ItemData>> fetchItemData() async {
     Isar? isar;
     List<ItemData> itemData = <ItemData>[];
@@ -148,7 +118,7 @@ class HomePageController extends GetxController {
       isar = await isarProvider();
       final List<Item>? queryResult = await isar.writeTxn(
         () async {
-          return await isar?.items.where().findAll();
+          return await isar?.items.where().sortByDisplayOrder().findAll();
         },
       );
 
@@ -173,5 +143,61 @@ class HomePageController extends GetxController {
     return itemData;
   }
 
-  // TODO(a): displayOrder更新処理
+  // Item 追加
+  Future<bool> createNewItem(
+    String name,
+    String? phoneNumber,
+    String? url,
+    String? description,
+    String? fileName,
+  ) async {
+    final Isar isar = await isarProvider();
+    final int maxOrder = await _getMaxDisplayOrder(isar);
+    final Item input = Item()
+      ..name = name
+      ..phoneNumber = phoneNumber ?? ''
+      ..url = url ?? ''
+      ..description = description ?? ''
+      ..fileName = fileName ?? ''
+      ..displayOrder = maxOrder
+      ..isarCreatedAt = DateTime.now()
+      ..isarUpdatedAt = DateTime.now();
+    try {
+      await isar.writeTxn(
+        () async {
+          await isar.items.put(input);
+        },
+      );
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not create Item client Api: $e');
+      }
+      return false;
+    }
+  }
+
+// displayOrderの最大値取得
+  Future<int> _getMaxDisplayOrder(Isar isar) async {
+    final List<Item?> items =
+        await isar.items.where().sortByDisplayOrderDesc().limit(1).findAll();
+
+    if (items.isNotEmpty) {
+      return items.first!.displayOrder!;
+    } else {
+      return 0; // デフォルト値、データが存在しない場合
+    }
+  }
+
+  // displayOrder更新処理
+  Future<void> updateDisplayOrder(List<ItemData> itemDataList) async {
+    final Isar isar = await isarProvider();
+    await isar.writeTxn(
+      () async {
+        for (final ItemData itemData in itemDataList) {
+          await isar.items.put(itemData.item);
+        }
+      },
+    );
+  }
 }
