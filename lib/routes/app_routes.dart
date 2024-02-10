@@ -8,12 +8,14 @@ abstract class Routes {
   static const String TOP = _Paths.TOP;
   static const String HOME = TOP + _Paths.HOME;
   static const String SETTING = TOP + _Paths.SETTING;
+  static const String ITEM_DETAIL = HOME + _Paths.ITEM_DETAIL;
 }
 
 abstract class _Paths {
   static const String TOP = '/top';
   static const String HOME = '/home';
   static const String SETTING = '/setting';
+  static const String ITEM_DETAIL = '/item_detail';
 }
 
 class NavManager {

@@ -8,7 +8,7 @@ Color menuItemBorderColor = const Color.fromRGBO(193, 163, 115, 1);
 Color menuLabelColor = const Color.fromRGBO(152, 121, 72, 1);
 Color menuTrailingColor = const Color.fromRGBO(233, 226, 215, 1);
 Color primaryThinColor = const Color.fromRGBO(234, 217, 191, 1);
-Color mainBackGroundColor = const Color.fromRGBO(232, 232, 232, 1);
+Color mainBackGroundColor = Colors.white;
 Color appBarMenuColor = const Color.fromRGBO(144, 144, 144, 1);
 Color accentColor = const Color.fromRGBO(0xF3, 0xF5, 0xFA, 1);
 Color primaryTextColor = const Color.fromRGBO(0x3E, 0x3E, 0x3E, 1);
@@ -48,11 +48,8 @@ ThemeData getLightTheme(BuildContext context) {
   return ThemeData(
     useMaterial3: true,
     primaryColor: primaryColor,
-    colorScheme: theme.colorScheme.copyWith(
-      secondary: accentColor,
-    ),
     fontFamily: 'NotoSansJP',
-    scaffoldBackgroundColor: mainBackGroundColor,
+    scaffoldBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.white,
       centerTitle: true,
@@ -147,5 +144,8 @@ ThemeData getLightTheme(BuildContext context) {
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: primaryColor,
     ),
+    colorScheme: theme.colorScheme
+        .copyWith(secondary: accentColor)
+        .copyWith(background: Colors.white),
   );
 }
