@@ -16,6 +16,10 @@ class InformationFormDialog {
     required VoidCallback onTapDone,
     required VoidCallback onTapAddImage,
     String? selectedPicturePath,
+    String? initialValueName,
+    String? initialValuePhoneNumber,
+    String? initialValueUrl,
+    String? initialValueDescription,
   }) {
     final RxBool isLoading = RxBool(false);
 
@@ -75,6 +79,18 @@ class InformationFormDialog {
                           onPressed: onTapAddImage,
                         ),
                         const SizedBox(height: 20),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 10),
+                          child: const Text(
+                            '名前',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           child: FormBuilder(
                             key: fbKey,
@@ -86,6 +102,7 @@ class InformationFormDialog {
                                     width: MediaQuery.of(context).size.width,
                                     child: FormBuilderTextField(
                                       name: 'name',
+                                      initialValue: initialValueName ?? '',
                                       textAlign: TextAlign.start,
                                       textAlignVertical:
                                           TextAlignVertical.center,
@@ -114,8 +131,21 @@ class InformationFormDialog {
                                     ),
                                   ),
                                   const SizedBox(height: 20),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: const Text(
+                                      '電話番号',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                   FormBuilderTextField(
                                     name: 'phoneNumber',
+                                    initialValue: initialValuePhoneNumber ?? '',
                                     textAlign: TextAlign.start,
                                     textAlignVertical: TextAlignVertical.center,
                                     textInputAction: TextInputAction.next,
@@ -137,13 +167,26 @@ class InformationFormDialog {
                                       filled: true,
                                       errorMaxLines: 3,
                                       border: InputBorder.none,
-                                      hintText: '連絡先',
+                                      hintText: '電話',
                                       hintStyle: TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                   const SizedBox(height: 20),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: const Text(
+                                      'URL',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                   FormBuilderTextField(
                                     name: 'url',
+                                    initialValue: initialValueUrl ?? '',
                                     textAlign: TextAlign.start,
                                     textAlignVertical: TextAlignVertical.center,
                                     textInputAction: TextInputAction.next,
@@ -169,8 +212,21 @@ class InformationFormDialog {
                                     ),
                                   ),
                                   const SizedBox(height: 20),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: const Text(
+                                      'メモ',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                   FormBuilderTextField(
                                     name: 'description',
+                                    initialValue: initialValueDescription ?? '',
                                     minLines: 3,
                                     maxLines: null,
                                     textAlign: TextAlign.start,

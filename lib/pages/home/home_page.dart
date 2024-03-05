@@ -141,9 +141,13 @@ class HomePage extends StatelessWidget {
                                           .currentState!.value['description']
                                           .toString();
 
-                                      final String? fileName = await controller
-                                          .saveImageToFileSystem(
-                                              controller.previewPicture.value!);
+                                      final String? fileName = controller
+                                                  .previewPicture.value ==
+                                              null
+                                          ? ''
+                                          : await controller
+                                              .saveImageToFileSystem(controller
+                                                  .previewPicture.value!);
 
                                       final bool result =
                                           await controller.createNewItem(
@@ -193,6 +197,8 @@ class HomePage extends StatelessWidget {
                                 await Get.toNamed<void>(
                                   Routes.ITEM_DETAIL,
                                   arguments: row,
+                                  id: NavManager.getNavigationRouteId(
+                                      Routes.HOME),
                                 );
                               },
                             );

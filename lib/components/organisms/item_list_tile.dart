@@ -40,7 +40,8 @@ class ItemListTile extends StatelessWidget {
                       foregroundDecoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: itemData.item.fileName == null
+                      child: itemData.item.fileName == null ||
+                              itemData.item.fileName == ''
                           ? Image.asset(
                               'assets/images/noimage.png',
                               fit: BoxFit.fitHeight,

@@ -23,16 +23,6 @@ class HomePageController extends GetxController {
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
 
-  // List<Informations> data = <Informations>[
-  //   Informations(title: '運転免許証'),
-  //   Informations(title: '健康保険証 A'),
-  //   Informations(title: '健康保険証 B'),
-  //   Informations(title: '健康保険証 C'),
-  //   Informations(title: '自動車保険'),
-  //   Informations(title: '図書館'),
-  //   Informations(title: '社員証'),
-  // ];
-
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -67,8 +57,7 @@ class HomePageController extends GetxController {
       );
       if (EnvironmentVariables.allowedMimeType.contains(mimeType)) {
         selectedPicture.value = selectedFile;
-        debugPrint(
-            ' selectedPicture.value.path: ${selectedPicture.value!.path}');
+        update();
       } else {
         if (context.mounted) {
           await FlutterPlatformAlert.showAlert(
@@ -127,10 +116,11 @@ class HomePageController extends GetxController {
 
       itemData = queryResult!.map(
         (Item item) {
-          final String filePath =
-              File(p.join(nowDocumentPath, item.fileName)).path;
-          debugPrint('filePath: $filePath');
-          return ItemData(item: item, imagePath: filePath);
+          final String imagePath = item.fileName == null || item.fileName == ''
+              ? ''
+              : File(p.join(nowDocumentPath, item.fileName)).path;
+          debugPrint('imagePath: $imagePath');
+          return ItemData(item: item, imagePath: imagePath);
         },
       ).toList();
 
@@ -155,7 +145,7 @@ class HomePageController extends GetxController {
     final int maxOrder = await _getMaxDisplayOrder(isar);
     final Item input = Item()
       ..name = name
-      ..phoneNumber = phoneNumber ?? ''
+      ..phoneNumber = phoneNumber!
       ..url = url ?? ''
       ..description = description ?? ''
       ..fileName = fileName ?? ''

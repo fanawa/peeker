@@ -29,12 +29,14 @@ class TopPage extends GetView<TopPageController> {
               ),
           ],
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(
-          currentIndex:
-              NavManager.isBottomNavItem(controller.currentIndex.value)
-                  ? controller.currentIndex.value
-                  : controller.previousIndex.value,
-        ),
+        bottomNavigationBar: controller.isVisibleBottomNav.value
+            ? CustomBottomNavigationBar(
+                currentIndex:
+                    NavManager.isBottomNavItem(controller.currentIndex.value)
+                        ? controller.currentIndex.value
+                        : controller.previousIndex.value,
+              )
+            : null,
       ),
     );
   }
