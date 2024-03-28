@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AddNewItemButton extends StatelessWidget {
-  const AddNewItemButton({
+class CreateItemButton extends StatelessWidget {
+  const CreateItemButton({
     Key? key,
     required this.onPressed,
   }) : super(key: key);

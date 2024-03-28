@@ -24,11 +24,24 @@ class HomePage extends StatelessWidget {
         return Scaffold(
           key: key,
           appBar: AppBar(
-            title: const Text(
-              'Home',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
+              title: const Text(
+                'Home',
+                style: TextStyle(color: Colors.black),
+              ),
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                  onPressed: () async {
+                    await Get.toNamed<void>(
+                      Routes.CREATE_ITEM,
+                      id: NavManager.getNavigationRouteId(Routes.HOME),
+                    );
+                  },
+                ),
+              ]),
           body: SafeArea(
             child: ListView(
               shrinkWrap: true,
@@ -76,7 +89,7 @@ class HomePage extends StatelessWidget {
                               'controller.items.length: ${controller.items.length}');
                           if (index == controller.items.length) {
                             // 追加ボタン
-                            return AddNewItemButton(
+                            return CreateItemButton(
                               key: const ValueKey<String>('add_button'),
                               onPressed: () async {
                                 await InformationFormDialog.show(

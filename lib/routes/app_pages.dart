@@ -1,4 +1,8 @@
 import 'package:get/get.dart';
+import 'package:idz/pages/create_item/create_item_binding.dart';
+import 'package:idz/pages/create_item/create_item_page.dart';
+import 'package:idz/pages/edit_item/edit_item_binding.dart';
+import 'package:idz/pages/edit_item/edit_item_page.dart';
 import 'package:idz/pages/home/home_page.dart';
 import 'package:idz/pages/home/home_page_binding.dart';
 import 'package:idz/pages/item_detail/item_detail_binding.dart';
@@ -26,10 +30,21 @@ class AppPages {
           binding: HomePageBinding(),
           children: <GetPage<dynamic>>[
             GetPage<dynamic>(
-              name: _Paths.ITEM_DETAIL,
-              page: () => ItemDetailPage(),
-              binding: ItemDetailPageBinding(),
+              name: _Paths.CREATE_ITEM,
+              page: () => CreateItemPage(),
+              binding: CreateItemPageBinding(),
             ),
+            GetPage<dynamic>(
+                name: _Paths.ITEM_DETAIL,
+                page: () => ItemDetailPage(),
+                binding: ItemDetailPageBinding(),
+                children: <GetPage<dynamic>>[
+                  GetPage<dynamic>(
+                    name: _Paths.EDIT_ITEM,
+                    page: () => const EditItemPage(),
+                    binding: EditItemPageBinding(),
+                  )
+                ]),
           ],
         ),
         GetPage<dynamic>(
