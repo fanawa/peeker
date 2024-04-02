@@ -11,7 +11,6 @@ class CreateItemPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GetBuilder<CreateItemPageController>(
       init: CreateItemPageController(),
       builder: (CreateItemPageController controller) {
@@ -35,13 +34,23 @@ class CreateItemPage extends StatelessWidget {
                   onPressed: () async {
                     if (_fbKey.currentState!.saveAndValidate()) {
                       final String name =
-                          _fbKey.currentState!.value['name'].toString();
+                          _fbKey.currentState!.value['name'] == null
+                              ? ''
+                              : _fbKey.currentState!.value['name'].toString();
                       final String phoneNumber =
-                          _fbKey.currentState!.value['phoneNumber'].toString();
+                          _fbKey.currentState!.value['phoneNumber'] == null
+                              ? ''
+                              : _fbKey.currentState!.value['phoneNumber']
+                                  .toString();
                       final String url =
-                          _fbKey.currentState!.value['url'].toString();
+                          _fbKey.currentState!.value['url'] == null
+                              ? ''
+                              : _fbKey.currentState!.value['url'].toString();
                       final String description =
-                          _fbKey.currentState!.value['description'].toString();
+                          _fbKey.currentState!.value['description'] == null
+                              ? ''
+                              : _fbKey.currentState!.value['description']
+                                  .toString();
 
                       final String? fileName =
                           controller.previewPicture.value == null
@@ -59,7 +68,7 @@ class CreateItemPage extends StatelessWidget {
                       if (result) {
                         controller.previewPicture.value = null;
                         if (context.mounted) {
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop<bool>(true);
                         }
                       }
                     }
