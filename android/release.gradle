@@ -1,0 +1,8 @@
+signingConfigs {
+    release {
+        storeFile file("quick-release.keystore")
+        storePassword "quick919"
+        keyAlias "key"
+        keyPassword "quick919"
+    }
+}

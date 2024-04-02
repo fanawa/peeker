@@ -11,6 +11,7 @@ class TopPageController extends GetxController {
   RxInt currentIndex = RxInt(0);
   RxInt previousIndex = RxInt(0);
   Rx<int> previousRoute = 0.obs;
+  Rx<bool> isVisibleBottomNav = true.obs;
 
   final List<String> pages = NavManager.ALL_NAV_ROUTES;
   late List<String> currentRoutes = List<String>.from(pages);

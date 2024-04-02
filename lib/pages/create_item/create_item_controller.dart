@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
-import 'package:idz/pages/home/models.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
 import 'package:idz/utils/environment_variables.dart';
@@ -16,19 +13,11 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-class HomePageController extends GetxController {
+class CreateItemPageController extends GetxController {
   final TopPageController controller = Get.find();
 
-  RxList<ItemData> items = RxList<ItemData>();
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
-
-  @override
-  Future<void> onInit() async {
-    super.onInit();
-    await fetchItemData();
-    update();
-  }
 
   /// 画像選択
   Future<void> selectPicture(BuildContext context) async {
@@ -98,41 +87,6 @@ class HomePageController extends GetxController {
   //**
   //  Isar
   //*/
-
-  /// Item データ取得
-  Future<List<ItemData>> fetchItemData() async {
-    Isar? isar;
-    List<ItemData> itemData = <ItemData>[];
-    try {
-      isar = await isarProvider();
-      final List<Item>? queryResult = await isar.writeTxn(
-        () async {
-          return await isar?.items.where().sortByDisplayOrder().findAll();
-        },
-      );
-
-      final String nowDocumentPath =
-          (await getApplicationDocumentsDirectory()).path;
-
-      itemData = queryResult!.map(
-        (Item item) {
-          final String imagePath = item.fileName == null || item.fileName == ''
-              ? ''
-              : File(p.join(nowDocumentPath, item.fileName)).path;
-          debugPrint('imagePath: $imagePath');
-          return ItemData(item: item, imagePath: imagePath);
-        },
-      ).toList();
-
-      return items.value = itemData;
-    } on Exception catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not get Building client Api: $e');
-      }
-    }
-    return itemData;
-  }
-
   // Item 追加
   Future<bool> createNewItem(
     String name,
@@ -177,17 +131,5 @@ class HomePageController extends GetxController {
     } else {
       return 0; // デフォルト値、データが存在しない場合
     }
-  }
-
-  // displayOrder更新処理
-  Future<void> updateDisplayOrder(List<ItemData> itemDataList) async {
-    final Isar isar = await isarProvider();
-    await isar.writeTxn(
-      () async {
-        for (final ItemData itemData in itemDataList) {
-          await isar.items.put(itemData.item);
-        }
-      },
-    );
   }
 }
