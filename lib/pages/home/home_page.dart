@@ -35,11 +35,11 @@ class HomePage extends StatelessWidget {
                     size: 30,
                   ),
                   onPressed: () async {
-                    final bool? result = await Get.toNamed<bool>(
+                    final dynamic result = await Get.toNamed<dynamic>(
                       Routes.CREATE_ITEM,
                       id: NavManager.getNavigationRouteId(Routes.HOME),
                     );
-                    if (result == false) {
+                    if (result is bool && result == true) {
                       controller.update();
                     }
                   },
