@@ -29,7 +29,6 @@ class ItemInformationForm extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const SizedBox(height: 70),
               Container(
                 constraints: const BoxConstraints(
                   maxHeight: 150,
