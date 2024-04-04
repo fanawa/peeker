@@ -87,6 +87,9 @@ class ItemInformationForm extends StatelessWidget {
                             keyboardType: TextInputType.multiline,
                             validator: FormBuilderValidators.compose(
                               <FormFieldValidator<String?>>[
+                                FormBuilderValidators.required(
+                                  errorText: '必須項目です',
+                                ),
                                 FormBuilderValidators.maxLength(40)
                               ],
                             ),
