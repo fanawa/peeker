@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-Color primaryColor = const Color.fromRGBO(152, 121, 72, 1);
+// Color primaryColor = const Color.fromRGBO(152, 121, 72, 1);
+Color primaryColor = Colors.black54;
 Color lightPrimaryColor = const Color.fromRGBO(245, 240, 234, 1);
 Color primaryColorLight = const Color.fromRGBO(152, 121, 72, 1);
 Color menuTileColor = const Color.fromRGBO(177, 141, 83, 1);

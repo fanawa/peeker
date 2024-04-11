@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
@@ -28,44 +30,52 @@ class ItemDetailPageController extends GetxController {
   @override
   void onInit() {
     itemData.value = Get.arguments as ItemData;
-    debugPrint('itemData.value!.imagePath: ${itemData.value!.imagePath}');
     super.onInit();
   }
 
-  Future<void> updateItem(
-    String? name,
-    String? phoneNumber,
-    String? url,
-    String? description,
-  ) async {
-    isar = await isarProvider();
-    final Item? updated =
-        await isar?.items.get(itemData.value!.item.id!.toInt());
-    updated!.name = name;
-    updated.phoneNumber = phoneNumber;
-    updated.url = url;
-    updated.description = description;
-    updated.isarUpdatedAt = DateTime.now();
-    try {
-      isar?.writeTxn(
-        () async {
-          await isar?.items.put(updated);
-        },
-      );
-
-      // TODOa): 画像のupdate処理
-    } on Exception catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not update ItemDetail client Api: $e');
-      }
-    }
+  void updateItemData(ItemData updatedData) {
+    itemData.value = updatedData;
+    update();
   }
 
-  Future<void> deleteItem(int itemId) async {
-    isar = await isarProvider();
-    isar!.writeTxn(() async {
-      return await isar?.items.delete(itemId);
-    });
+  /// Item データ取得
+  Future<ItemData?> fetchItemData(int itemId) async {
+    Isar? isar;
+    try {
+      isar = await isarProvider();
+      final Item? item = await isar.items.get(itemId);
+
+      final String nowDocumentPath =
+          (await getApplicationDocumentsDirectory()).path;
+
+      final String imagePath = item!.fileName == null || item.fileName == ''
+          ? ''
+          : File(p.join(nowDocumentPath, item.fileName)).path;
+      debugPrint('imagePath: $imagePath');
+      return ItemData(item: item, imagePath: imagePath);
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not fetch item client Api: $e');
+        return null;
+      }
+    }
+    return null;
+  }
+
+  Future<bool> deleteItem(int itemId) async {
+    try {
+      isar = await isarProvider();
+      isar!.writeTxn(() async {
+        await isar?.items.delete(itemId);
+      });
+      return true;
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not delete item client Api: $e');
+        return false;
+      }
+    }
+    return false;
   }
 
   Future<bool> call() async {
@@ -95,7 +105,6 @@ class ItemDetailPageController extends GetxController {
     await Get.toNamed<void>(
       Routes.PHOTO_VIEW_PAGE,
       arguments: uri,
-      // id: NavManager.getNavigationRouteId(Routes.HOME),
     );
     topPageController.isVisibleBottomNav.value = true;
   }

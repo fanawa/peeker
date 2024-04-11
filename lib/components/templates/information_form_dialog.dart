@@ -20,6 +20,7 @@ class InformationFormDialog {
     String? initialValuePhoneNumber,
     String? initialValueUrl,
     String? initialValueDescription,
+    
   }) {
     final RxBool isLoading = RxBool(false);
 

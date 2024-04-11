@@ -14,126 +14,157 @@ class CreateItemPage extends StatelessWidget {
     return GetBuilder<CreateItemPageController>(
       init: CreateItemPageController(),
       builder: (CreateItemPageController controller) {
-        return PopScope(
-          key: GlobalKey(),
-          canPop: true,
-          onPopInvoked: (bool didPop) {
-            final GlobalKey<NavigatorState> routeKey = Get.key;
-            if (routeKey.currentState!.canPop()) {
-              Navigator.of(context).pop();
-            }
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                '新規作成',
-                style: TextStyle(color: Colors.black),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () async {
-                    if (_fbKey.currentState!.saveAndValidate()) {
-                      final String name =
-                          _fbKey.currentState!.value['name'] == null
-                              ? ''
-                              : _fbKey.currentState!.value['name'].toString();
-                      final String phoneNumber =
-                          _fbKey.currentState!.value['phoneNumber'] == null
-                              ? ''
-                              : _fbKey.currentState!.value['phoneNumber']
-                                  .toString();
-                      final String url =
-                          _fbKey.currentState!.value['url'] == null
-                              ? ''
-                              : _fbKey.currentState!.value['url'].toString();
-                      final String description =
-                          _fbKey.currentState!.value['description'] == null
-                              ? ''
-                              : _fbKey.currentState!.value['description']
-                                  .toString();
-
-                      final String? fileName =
-                          controller.previewPicture.value == null
-                              ? ''
-                              : await controller.saveImageToFileSystem(
-                                  controller.previewPicture.value!);
-
-                      final bool result = await controller.createNewItem(
-                        name,
-                        phoneNumber,
-                        url,
-                        description,
-                        fileName,
-                      );
-                      if (result) {
-                        controller.previewPicture.value = null;
-                        if (context.mounted) {
-                          Navigator.of(context).pop<bool>(true);
-                        }
-                      }
-                    }
-                  },
-                  child: const Text(
-                    '完了',
-                  ),
-                ),
-              ],
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              '新規作成',
+              style: TextStyle(color: Colors.black),
             ),
-            body: SafeArea(
-              child: ItemInformationForm(
-                fbKey: _fbKey,
-                previewPicturePath: '',
-                onTapCancel: () async {
-                  final bool isChanged = _fbKey.currentState!.isDirty ||
-                      controller.previewPicture.value != null;
-                  // 初期値と比較して変更があるか確認
-                  if (isChanged) {
-                    final CustomButton result =
-                        await FlutterPlatformAlert.showCustomAlert(
-                      windowTitle: '変更内容を破棄しますか？',
-                      text: '',
-                      positiveButtonTitle: 'OK',
-                      negativeButtonTitle: 'キャンセル',
-                    );
-                    if (!context.mounted) {
-                      return;
-                    }
-                    switch (result) {
-                      case CustomButton.positiveButton:
-                        // OK
-                        Navigator.of(context, rootNavigator: true).pop();
-                        controller.previewPicture.value = null;
-                        break;
-                      // キャンセル
-                      case CustomButton.negativeButton:
-                        Navigator.of(context).pop();
-                        break;
-                      default:
-                        break;
-                    }
-                  } else {
-                    // 変更がなければ直接ダイアログを閉じる
-                    Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    ).pop();
-                    controller.selectedPicture.value = null;
-                  }
-                },
-                onTapAddImage: () async {
-                  // 画像選択 or カメラ起動
-                  await controller.selectPicture(context);
+            leadingWidth: 100,
+            leading: TextButton(
+              child: const Text(
+                'キャンセル',
+              ),
+              onPressed: () async {
+                final bool isChanged = _fbKey.currentState!.isDirty ||
+                    controller.previewPicture.value != null;
+                // 初期値と比較して変更があるか確認
+                if (isChanged) {
+                  final CustomButton result =
+                      await FlutterPlatformAlert.showCustomAlert(
+                    windowTitle: '変更内容を破棄しますか？',
+                    text: '',
+                    positiveButtonTitle: 'OK',
+                    negativeButtonTitle: 'キャンセル',
+                  );
                   if (!context.mounted) {
                     return;
                   }
-                  if (controller.selectedPicture.value != null) {
-                    controller.previewPicture.value =
-                        controller.selectedPicture.value;
-                    controller.selectedPicture.value = null;
-                    controller.update();
+                  switch (result) {
+                    case CustomButton.positiveButton:
+                      // OK
+                      // Navigator.of(context, rootNavigator: true).pop();
+                      Navigator.of(context).pop<bool>(false);
+                      controller.previewPicture.value = null;
+                      break;
+                    // キャンセル
+                    case CustomButton.negativeButton:
+                      Navigator.of(context).pop();
+                      break;
+                    default:
+                      break;
+                  }
+                } else {
+                  // 変更がなければ直接ダイアログを閉じる
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (_fbKey.currentState!.saveAndValidate()) {
+                    final String name =
+                        _fbKey.currentState!.value['name'] == null
+                            ? ''
+                            : _fbKey.currentState!.value['name'].toString();
+                    final String phoneNumber =
+                        _fbKey.currentState!.value['phoneNumber'] == null
+                            ? ''
+                            : _fbKey.currentState!.value['phoneNumber']
+                                .toString();
+                    final String url = _fbKey.currentState!.value['url'] == null
+                        ? ''
+                        : _fbKey.currentState!.value['url'].toString();
+                    final String description =
+                        _fbKey.currentState!.value['description'] == null
+                            ? ''
+                            : _fbKey.currentState!.value['description']
+                                .toString();
+
+                    final String? fileName =
+                        controller.previewPicture.value == null
+                            ? ''
+                            : await controller.saveImageToFileSystem(
+                                controller.previewPicture.value!);
+
+                    final bool result = await controller.createNewItem(
+                      name,
+                      phoneNumber,
+                      url,
+                      description,
+                      fileName,
+                    );
+                    if (result != null) {
+                      controller.previewPicture.value = null;
+                      if (context.mounted) {
+                        // Navigator.of(context).pop<bool>(true);
+                        // Get.back(result: true, canPop: true);
+                        Navigator.of(context).pop(true);
+                      }
+                    }
                   }
                 },
+                child: const Text(
+                  '完了',
+                ),
               ),
+            ],
+          ),
+          body: SafeArea(
+            child: ItemInformationForm(
+              fbKey: _fbKey,
+              previewPicturePath: controller.previewPicture.value?.path,
+              onTapCancel: () async {
+                final bool isChanged = _fbKey.currentState!.isDirty ||
+                    controller.previewPicture.value != null;
+                // 初期値と比較して変更があるか確認
+                if (isChanged) {
+                  final CustomButton result =
+                      await FlutterPlatformAlert.showCustomAlert(
+                    windowTitle: '変更内容を破棄しますか？',
+                    text: '',
+                    positiveButtonTitle: 'OK',
+                    negativeButtonTitle: 'キャンセル',
+                  );
+                  if (!context.mounted) {
+                    return;
+                  }
+                  switch (result) {
+                    case CustomButton.positiveButton:
+                      // OK
+                      Navigator.of(context, rootNavigator: true).pop();
+                      controller.previewPicture.value = null;
+                      break;
+                    // キャンセル
+                    case CustomButton.negativeButton:
+                      Navigator.of(context).pop();
+                      break;
+                    default:
+                      break;
+                  }
+                } else {
+                  // 変更がなければ直接ダイアログを閉じる
+                  Navigator.of(
+                    context,
+                    rootNavigator: true,
+                  ).pop();
+                  controller.selectedPicture.value = null;
+                }
+              },
+              onTapAddImage: () async {
+                // 画像選択 or カメラ起動
+                await controller.selectPicture(context);
+                if (!context.mounted) {
+                  return;
+                }
+                if (controller.selectedPicture.value != null) {
+                  controller.previewPicture.value =
+                      controller.selectedPicture.value;
+                  controller.selectedPicture.value = null;
+                  controller.update();
+                }
+              },
             ),
           ),
         );

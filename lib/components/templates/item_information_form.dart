@@ -7,17 +7,25 @@ import 'package:get/get.dart';
 import 'package:idz/components/atoms/custom_circular_progress_indicator.dart';
 
 class ItemInformationForm extends StatelessWidget {
-  ItemInformationForm({
-    Key? key,
-    required this.fbKey,
-    this.previewPicturePath,
-    required this.onTapCancel,
-    required this.onTapAddImage,
-  }) : super(key: key);
+  ItemInformationForm(
+      {Key? key,
+      required this.fbKey,
+      this.previewPicturePath,
+      required this.onTapCancel,
+      required this.onTapAddImage,
+      this.initialValueName,
+      this.initialValuePhoneNumber,
+      this.initialValueUrl,
+      this.initialValueDescription})
+      : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
   final String? previewPicturePath;
   final VoidCallback onTapCancel;
   final VoidCallback onTapAddImage;
+  final String? initialValueName;
+  final String? initialValuePhoneNumber;
+  final String? initialValueUrl;
+  final String? initialValueDescription;
 
   final RxBool isLoading = RxBool(false);
 
@@ -81,6 +89,7 @@ class ItemInformationForm extends StatelessWidget {
                           width: MediaQuery.of(context).size.width,
                           child: FormBuilderTextField(
                             name: 'name',
+                            initialValue: initialValueName ?? '',
                             textAlign: TextAlign.start,
                             textAlignVertical: TextAlignVertical.center,
                             textInputAction: TextInputAction.next,
@@ -123,6 +132,7 @@ class ItemInformationForm extends StatelessWidget {
                         ),
                         FormBuilderTextField(
                           name: 'phoneNumber',
+                          initialValue: initialValuePhoneNumber ?? '',
                           textAlign: TextAlign.start,
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
@@ -162,6 +172,7 @@ class ItemInformationForm extends StatelessWidget {
                         ),
                         FormBuilderTextField(
                           name: 'url',
+                          initialValue: initialValueUrl ?? '',
                           textAlign: TextAlign.start,
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
@@ -200,6 +211,7 @@ class ItemInformationForm extends StatelessWidget {
                         ),
                         FormBuilderTextField(
                           name: 'description',
+                          initialValue: initialValueDescription ?? '',
                           minLines: 3,
                           maxLines: null,
                           textAlign: TextAlign.start,

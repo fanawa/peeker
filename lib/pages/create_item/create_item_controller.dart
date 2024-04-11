@@ -107,11 +107,11 @@ class CreateItemPageController extends GetxController {
       ..isarCreatedAt = DateTime.now()
       ..isarUpdatedAt = DateTime.now();
     try {
-      await isar.writeTxn(
-        () async {
-          await isar.items.put(input);
-        },
-      );
+      final int? itemId = await isar.writeTxn(() async {
+        final int id = await isar.items.put(input);
+        return id;
+      });
+      debugPrint('itemId: $itemId');
       return true;
     } catch (e) {
       if (kDebugMode) {
