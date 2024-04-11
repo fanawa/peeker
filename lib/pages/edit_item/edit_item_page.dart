@@ -90,7 +90,6 @@ class EditItemPage extends StatelessWidget {
                             ? itemData.imagePath
                             : await controller.saveImageToFileSystem(
                                 controller.previewPicture.value!);
-
                     final bool success = await controller.updateItem(
                       name,
                       phoneNumber,
@@ -98,9 +97,6 @@ class EditItemPage extends StatelessWidget {
                       description,
                       fileName,
                     );
-                    // await Future<void>.delayed(
-                    //   const Duration(milliseconds: 500),
-                    // );
                     if (success) {
                       // データの更新が成功した場合、最新のデータを取得
                       final ItemData? updatedItemData =
@@ -111,7 +107,6 @@ class EditItemPage extends StatelessWidget {
                           Get.back<ItemData>(
                               id: NavManager.getNavigationRouteId(Routes.HOME),
                               result: updatedItemData);
-                          // Navigator.of(context).pop(updatedItemData);
                         }
                       } else {
                         if (kDebugMode) {

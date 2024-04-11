@@ -23,61 +23,11 @@ class HomePageController extends GetxController {
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
 
-  // ハイライトするアイテムのID
-  late int? highlightItemId;
-  // スクロール操作用のコントローラー
-  ScrollController scrollController = ScrollController();
-  //
-  final num? ITEM_HEIGHT = 50; // TODO(a): ItemListTileの高さ
-
-  // 新しいアイテムが追加されたかどうかを示すフラグ
-  RxBool isNewItemAdded = false.obs;
-
   @override
   Future<void> onInit() async {
     super.onInit();
     await fetchItemData();
     update();
-  }
-
-  ///
-  void scrollToHighlightItem(int itemId) {
-    highlightItemId = itemId;
-    // ハイライトするアイテムのインデックスを取得
-    // この例ではcontroller.items内でhighlightItemIdに一致するアイテムのインデックスを検索します
-    // final int index = items.indexWhere((item) => item.item.id == itemId);
-    final int index = items.length;
-    debugPrint('index; $index');
-    if (index != -1 && index != null) {
-      // アイテムのインデックスが見つかった場合
-      // アイテムの高さとインデックスを基にスクロールする位置を計算（例: アイテムの高さ * インデックス）
-      final num position = index / 2 * ITEM_HEIGHT!; // ITEM_HEIGHTはアイテムの高さ
-      debugPrint('position; $position');
-
-      // animateToメソッドを使用して指定した位置までスクロール
-      // durationとcurveはスクロールの速度と動作を制御します
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-      //   if (scrollController.hasClients) {
-      scrollController.animateTo(
-        position.toDouble(),
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-      //   }
-      // });
-      // update();
-    }
-  }
-
-  void scrollToBottom() {
-    if (scrollController.hasClients) {
-      scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      // scrollController.animateTo(
-      //   scrollController.position.maxScrollExtent,
-      //   duration: const Duration(milliseconds: 500),
-      //   curve: Curves.easeOut,
-      // );
-    }
   }
 
   /// 画像選択
@@ -161,8 +111,7 @@ class HomePageController extends GetxController {
         },
       );
 
-      final String storePath =
-          (await getApplicationDocumentsDirectory()).path;
+      final String storePath = (await getApplicationDocumentsDirectory()).path;
 
       itemData = queryResult!
           .map((Item item) {

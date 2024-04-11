@@ -52,10 +52,8 @@ class HomePage extends StatelessWidget {
                 controller.update();
               },
               child: ListView(
-                controller: controller.scrollController,
                 shrinkWrap: true,
                 children: <Widget>[
-                  // const SizedBox(height: 30),
                   Container(
                     height: MediaQuery.of(context).size.height * 0.8,
                     padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -111,10 +109,8 @@ class HomePage extends StatelessWidget {
                                 controller.update();
                               },
                             );
-                            ;
                           },
                         );
-                        // }
                       },
                     ),
                   ),
