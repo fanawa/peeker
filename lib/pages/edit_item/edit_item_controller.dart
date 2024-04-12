@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
@@ -25,11 +26,40 @@ class EditItemPageController extends GetxController {
 
   String? previewPicturePath;
 
+  // フォームの初期値を保存する変数
+  late final ItemData initialItemData;
+  // フォームが変更されたかどうかを追跡する変数
+  RxBool isFormChanged = false.obs;
+
   @override
   void onInit() {
     itemData.value = Get.arguments as ItemData;
     previewPicturePath = itemData.value!.imagePath;
+
+    // コピー
+    initialItemData = itemData.value!.copyWith();
+
     super.onInit();
+  }
+
+  void checkFormChanges(GlobalKey<FormBuilderState> fbKey) {
+    // FormBuilderのキーを使用して現在のフォームの値を取得
+    final Map<String, dynamic> currentValues = fbKey.currentState!.value;
+
+    // 初期データと現在のフォームの値を比較
+    final bool hasChanged =
+        initialItemData.item.name != currentValues['name'] ||
+            initialItemData.item.phoneNumber != currentValues['phoneNumber'] ||
+            initialItemData.item.url != currentValues['url'] ||
+            initialItemData.item.description != currentValues['description'] ||
+            // 画像の変更も考慮する
+            (previewPicture.value != null &&
+                initialItemData.imagePath != previewPicturePath);
+
+    // 変更があれば true、なければ false をセット
+    isFormChanged.value = hasChanged;
+    // UIを更新するためにGetxのupdateメソッドを呼び出す
+    update();
   }
 
   /// 画像選択

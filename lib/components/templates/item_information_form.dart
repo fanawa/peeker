@@ -7,17 +7,21 @@ import 'package:get/get.dart';
 import 'package:idz/components/atoms/custom_circular_progress_indicator.dart';
 
 class ItemInformationForm extends StatelessWidget {
-  ItemInformationForm(
-      {Key? key,
-      required this.fbKey,
-      this.previewPicturePath,
-      required this.onTapCancel,
-      required this.onTapAddImage,
-      this.initialValueName,
-      this.initialValuePhoneNumber,
-      this.initialValueUrl,
-      this.initialValueDescription})
-      : super(key: key);
+  ItemInformationForm({
+    Key? key,
+    required this.fbKey,
+    this.previewPicturePath,
+    required this.onTapCancel,
+    required this.onTapAddImage,
+    this.initialValueName,
+    this.initialValuePhoneNumber,
+    this.initialValueUrl,
+    this.initialValueDescription,
+    this.onChangedName,
+    this.onChangedPhoneNumber,
+    this.onChangedUrl,
+    this.onChangedDescription,
+  }) : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
   final String? previewPicturePath;
   final VoidCallback onTapCancel;
@@ -26,6 +30,10 @@ class ItemInformationForm extends StatelessWidget {
   final String? initialValuePhoneNumber;
   final String? initialValueUrl;
   final String? initialValueDescription;
+  final void Function(String?)? onChangedName;
+  final void Function(String?)? onChangedPhoneNumber;
+  final void Function(String?)? onChangedUrl;
+  final void Function(String?)? onChangedDescription;
 
   final RxBool isLoading = RxBool(false);
 
@@ -94,6 +102,7 @@ class ItemInformationForm extends StatelessWidget {
                             textAlignVertical: TextAlignVertical.center,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.multiline,
+                            onChanged: onChangedName,
                             validator: FormBuilderValidators.compose(
                               <FormFieldValidator<String?>>[
                                 FormBuilderValidators.required(
@@ -137,6 +146,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.phone,
+                          onChanged: onChangedPhoneNumber,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.maxLength(20),
@@ -177,6 +187,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.url,
+                          onChanged: onChangedUrl,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.url(),
@@ -218,6 +229,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.newline,
                           keyboardType: TextInputType.multiline,
+                          onChanged: onChangedDescription,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.maxLength(200)

@@ -66,61 +66,70 @@ class EditItemPage extends StatelessWidget {
             ),
             actions: <Widget>[
               TextButton(
-                onPressed: () async {
-                  if (_fbKey.currentState!.saveAndValidate()) {
-                    final String name =
-                        _fbKey.currentState!.value['name'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['name'].toString();
-                    final String phoneNumber =
-                        _fbKey.currentState!.value['phoneNumber'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['phoneNumber']
-                                .toString();
-                    final String url = _fbKey.currentState!.value['url'] == null
-                        ? ''
-                        : _fbKey.currentState!.value['url'].toString();
-                    final String description =
-                        _fbKey.currentState!.value['description'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['description']
-                                .toString();
-                    final String? fileName =
-                        controller.previewPicture.value == null
-                            ? itemData.imagePath
-                            : await controller.saveImageToFileSystem(
-                                controller.previewPicture.value!);
-                    final bool success = await controller.updateItem(
-                      name,
-                      phoneNumber,
-                      url,
-                      description,
-                      fileName,
-                    );
-                    if (success) {
-                      // データの更新が成功した場合、最新のデータを取得
-                      final ItemData? updatedItemData =
-                          await controller.fetchItemData(itemData.item.id!);
-                      if (updatedItemData != null) {
-                        // 成功した場合のみ、更新されたデータを戻り値として設定
-                        if (context.mounted) {
-                          Get.back<ItemData>(
-                              id: NavManager.getNavigationRouteId(Routes.HOME),
-                              result: updatedItemData);
+                // 変更があれば true
+                onPressed: !controller.isFormChanged.value
+                    ? null
+                    : () async {
+                        // ボタンが押されたときの処理
+                        // isFormChanged が false の場合、ボタンは非活性化されます。() async {
+                        if (_fbKey.currentState!.saveAndValidate()) {
+                          final String name =
+                              _fbKey.currentState!.value['name'] == null
+                                  ? ''
+                                  : _fbKey.currentState!.value['name']
+                                      .toString();
+                          final String phoneNumber =
+                              _fbKey.currentState!.value['phoneNumber'] == null
+                                  ? ''
+                                  : _fbKey.currentState!.value['phoneNumber']
+                                      .toString();
+                          final String url =
+                              _fbKey.currentState!.value['url'] == null
+                                  ? ''
+                                  : _fbKey.currentState!.value['url']
+                                      .toString();
+                          final String description =
+                              _fbKey.currentState!.value['description'] == null
+                                  ? ''
+                                  : _fbKey.currentState!.value['description']
+                                      .toString();
+                          final String? fileName =
+                              controller.previewPicture.value == null
+                                  ? itemData.imagePath
+                                  : await controller.saveImageToFileSystem(
+                                      controller.previewPicture.value!);
+                          final bool success = await controller.updateItem(
+                            name,
+                            phoneNumber,
+                            url,
+                            description,
+                            fileName,
+                          );
+                          if (success) {
+                            // データの更新が成功した場合、最新のデータを取得
+                            final ItemData? updatedItemData = await controller
+                                .fetchItemData(itemData.item.id!);
+                            if (updatedItemData != null) {
+                              // 成功した場合のみ、更新されたデータを戻り値として設定
+                              if (context.mounted) {
+                                Get.back<ItemData>(
+                                    id: NavManager.getNavigationRouteId(
+                                        Routes.HOME),
+                                    result: updatedItemData);
+                              }
+                            } else {
+                              if (kDebugMode) {
+                                debugPrint('データがありません。');
+                              }
+                            }
+                          } else {
+                            // 更新に失敗した場合の処理
+                            if (kDebugMode) {
+                              debugPrint('更新失敗しました');
+                            }
+                          }
                         }
-                      } else {
-                        if (kDebugMode) {
-                          debugPrint('データがありません。');
-                        }
-                      }
-                    } else {
-                      // 更新に失敗した場合の処理
-                      if (kDebugMode) {
-                        debugPrint('更新失敗しました');
-                      }
-                    }
-                  }
-                },
+                      },
                 child: const Text(
                   '完了',
                 ),
@@ -135,6 +144,18 @@ class EditItemPage extends StatelessWidget {
               initialValuePhoneNumber: itemData.item.phoneNumber,
               initialValueUrl: itemData.item.url,
               initialValueDescription: itemData.item.description,
+              onChangedName: (_) {
+                controller.checkFormChanges(_fbKey);
+              },
+              onChangedPhoneNumber: (_) {
+                controller.checkFormChanges(_fbKey);
+              },
+              onChangedUrl: (_) {
+                controller.checkFormChanges(_fbKey);
+              },
+              onChangedDescription: (_) {
+                controller.checkFormChanges(_fbKey);
+              },
               onTapCancel: () async {
                 final bool isChanged = _fbKey.currentState!.isDirty;
                 // 初期値と比較して変更があるか確認
