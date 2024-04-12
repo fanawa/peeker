@@ -24,7 +24,7 @@ class ItemListTile extends StatelessWidget {
             children: <Widget>[
               const SizedBox(height: 30),
               SizedBox(
-                height: 100,
+                height: 100, // TODO(a): マジックナンバー ITEM_HEIGHTに変更する
                 child: PageView.builder(
                   itemCount: 1, // TODO(a): listにしたい
                   controller: PageController(

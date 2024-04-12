@@ -8,6 +8,13 @@ class ItemData {
     this.imagePath,
   });
 
-  Item item;
-  String? imagePath;
+  final Item item;
+  final String? imagePath;
+
+  ItemData copyWith({Item? item, String? imagePath}) {
+    return ItemData(
+      item: item ?? this.item.copyWith(),
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
 }

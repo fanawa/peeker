@@ -41,7 +41,7 @@ class AppPages {
                 children: <GetPage<dynamic>>[
                   GetPage<dynamic>(
                     name: _Paths.EDIT_ITEM,
-                    page: () => const EditItemPage(),
+                    page: () => EditItemPage(),
                     binding: EditItemPageBinding(),
                   )
                 ]),

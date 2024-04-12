@@ -10,7 +10,7 @@ abstract class Routes {
   static const String SETTING = TOP + _Paths.SETTING;
   static const String ITEM_DETAIL = HOME + _Paths.ITEM_DETAIL;
   static const String CREATE_ITEM = HOME + _Paths.CREATE_ITEM;
-  static const String EDIT_ITEM = HOME + _Paths.EDIT_ITEM;
+  static const String EDIT_ITEM = ITEM_DETAIL + _Paths.EDIT_ITEM;
   static const String PHOTO_VIEW_PAGE = _Paths.PHOTO_VIEW_PAGE;
 }
 

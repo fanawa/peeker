@@ -111,18 +111,25 @@ class HomePageController extends GetxController {
         },
       );
 
-      final String nowDocumentPath =
-          (await getApplicationDocumentsDirectory()).path;
+      final String storePath = (await getApplicationDocumentsDirectory()).path;
 
-      itemData = queryResult!.map(
-        (Item item) {
-          final String imagePath = item.fileName == null || item.fileName == ''
-              ? ''
-              : File(p.join(nowDocumentPath, item.fileName)).path;
-          debugPrint('imagePath: $imagePath');
-          return ItemData(item: item, imagePath: imagePath);
-        },
-      ).toList();
+      itemData = queryResult!
+          .map((Item item) {
+            // ファイル名からフルパスを生成
+            final String imagePath =
+                item.fileName == null || item.fileName == ''
+                    ? ''
+                    : p.join(storePath, item.fileName);
+            if (!File(imagePath).existsSync()) {
+              debugPrint('ファイルが存在しません: $imagePath');
+              return null;
+            }
+            debugPrint('imagePath: $imagePath');
+            return ItemData(item: item, imagePath: imagePath);
+          })
+          .where((ItemData? item) => item != null)
+          .cast<ItemData>()
+          .toList();
 
       return items.value = itemData;
     } on Exception catch (e) {

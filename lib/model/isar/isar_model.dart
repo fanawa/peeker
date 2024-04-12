@@ -34,4 +34,30 @@ class Item implements Base {
   DateTime? isarDeletedAt;
   @override
   DateTime? isarUpdatedAt;
+
+  Item copyWith({
+    Id? id,
+    String? name,
+    String? phoneNumber,
+    String? url,
+    String? description,
+    String? fileName,
+    int? displayOrder,
+    DateTime? isarCreatedAt,
+    DateTime? isarDeletedAt,
+    DateTime? isarUpdatedAt,
+  }) {
+    return Item(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      url: url ?? this.url,
+      description: description ?? this.description,
+      fileName: fileName ?? this.fileName,
+      displayOrder: displayOrder ?? this.displayOrder,
+      isarCreatedAt: isarCreatedAt ?? this.isarCreatedAt,
+      isarDeletedAt: isarDeletedAt ?? this.isarDeletedAt,
+      isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,
+    );
+  }
 }
