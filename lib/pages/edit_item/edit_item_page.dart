@@ -141,7 +141,10 @@ class EditItemPage extends StatelessWidget {
               fbKey: _fbKey,
               previewPicturePath: controller.previewPicturePath,
               initialValueName: itemData.item.name,
-              initialValuePhoneNumber: itemData.item.phoneNumber,
+              initialValueContactName:
+                  itemData.item.phoneNumbers.first.contactName, // TODO
+              initialValuePhoneNumber:
+                  itemData.item.phoneNumbers.first.number, // TODO
               initialValueUrl: itemData.item.url,
               initialValueDescription: itemData.item.description,
               onChangedName: (_) {
@@ -204,6 +207,7 @@ class EditItemPage extends StatelessWidget {
                   controller.previewPicturePath =
                       controller.previewPicture.value!.path;
                   controller.selectedPicture.value = null;
+                  controller.checkFormChanges(_fbKey);
                   controller.update();
                 }
               },

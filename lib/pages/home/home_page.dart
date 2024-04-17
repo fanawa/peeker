@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
           key: key,
           appBar: AppBar(
               title: const Text(
-                'Home',
+                '',
                 style: TextStyle(color: Colors.black),
               ),
               actions: <Widget>[

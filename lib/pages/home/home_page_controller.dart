@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -122,7 +123,6 @@ class HomePageController extends GetxController {
                     : p.join(storePath, item.fileName);
             if (!File(imagePath).existsSync()) {
               debugPrint('ファイルが存在しません: $imagePath');
-              return null;
             }
             debugPrint('imagePath: $imagePath');
             return ItemData(item: item, imagePath: imagePath);
@@ -162,7 +162,8 @@ class HomePageController extends GetxController {
     try {
       await isar.writeTxn(
         () async {
-          await isar.items.put(input);
+          final int itemId = await isar.items.put(input);
+          await createPhoneNumbers(itemId, 'contactName', phoneNumber);
         },
       );
       return true;
@@ -171,6 +172,47 @@ class HomePageController extends GetxController {
         debugPrint('Could not create Item client Api: $e');
       }
       return false;
+    }
+  }
+
+  // phoneNumber追加
+  Future<void> createPhoneNumbers(
+    int itemId,
+    String? contactName,
+    String phoneNumber,
+  ) async {
+    final Isar isar = await isarProvider();
+
+    final Item? item = await isar.items.get(itemId);
+    debugPrint('createPhoneNumbers() item; $item');
+    if (item == null) {
+      debugPrint('Item not found for ID: $itemId');
+      return;
+    }
+
+    // PhoneNumbersに登録
+    final PhoneNumber input = PhoneNumber(number: phoneNumber)
+      ..number = phoneNumber
+      ..contactName = contactName
+      ..isarCreatedAt = DateTime.now()
+      ..isarUpdatedAt = DateTime.now()
+      ..item.value = item;
+
+    item.phoneNumbers.add(input); // PhoneNumber を Item のリンクに追加
+    debugPrint('item; $item');
+
+    try {
+      await isar.writeTxn(
+        () async {
+          await isar.phoneNumbers.put(input);
+          await item.phoneNumbers.save();
+        },
+      );
+      debugPrint('PhoneNumber added successfully');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not create PhoneNumber client Api: $e');
+      }
     }
   }
 

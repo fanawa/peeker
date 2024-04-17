@@ -87,8 +87,27 @@ class CreateItemPageController extends GetxController {
   //**
   //  Isar
   //*/
+
+// Item 作成後に PhoneNumber 追加
+  Future<bool> createItemWithPhoneNumbers(
+    String name,
+    String contactName,
+    String phoneNumber,
+    String? url,
+    String? description,
+    String? fileName,
+  ) async {
+    final int? itemId =
+        await createNewItem(name, phoneNumber, url, description, fileName);
+    if (itemId != null) {
+      await createPhoneNumbers(itemId, contactName, phoneNumber);
+      return true;
+    }
+    return false;
+  }
+
   // Item 追加
-  Future<bool> createNewItem(
+  Future<int?> createNewItem(
     String name,
     String? phoneNumber,
     String? url,
@@ -106,18 +125,55 @@ class CreateItemPageController extends GetxController {
       ..displayOrder = maxOrder
       ..isarCreatedAt = DateTime.now()
       ..isarUpdatedAt = DateTime.now();
+    int? itemId;
     try {
-      final int? itemId = await isar.writeTxn(() async {
-        final int id = await isar.items.put(input);
-        return id;
+      itemId = await isar.writeTxn(() async {
+        return isar.items.put(input);
       });
-      debugPrint('itemId: $itemId');
-      return true;
+      debugPrint('Item created with ID: $itemId');
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Could not create Item client Api: $e');
       }
-      return false;
+    }
+    return itemId;
+  }
+
+  // phoneNumber追加
+  Future<void> createPhoneNumbers(
+    int itemId,
+    String? contactName,
+    String phoneNumber,
+  ) async {
+    final Isar isar = await isarProvider();
+    try {
+      await isar.writeTxn(
+        () async {
+          final Item? item = await isar.items.get(itemId);
+          if (item == null) {
+            debugPrint('Item not found for ID: $itemId');
+            return;
+          }
+
+          // PhoneNumbersに登録
+          final PhoneNumber input = PhoneNumber(number: phoneNumber)
+            ..contactName = contactName
+            ..isarCreatedAt = DateTime.now()
+            ..isarUpdatedAt = DateTime.now()
+            ..item.value = item;
+
+          await isar.phoneNumbers.put(input); // PhoneNumber を保存
+
+          // オプション：itemにphoneNumberをリンクする場合
+          item.phoneNumbers.add(input);
+          await item.phoneNumbers.save();
+        },
+      );
+      debugPrint('PhoneNumber added successfully');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not create PhoneNumber client Api: $e');
+      }
     }
   }
 

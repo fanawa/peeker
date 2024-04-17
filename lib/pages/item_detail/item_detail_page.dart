@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/components/templates/tel_error_dialog.dart';
+import 'package:idz/model/isar/isar_model.dart';
 import 'package:idz/pages/home/models.dart';
 import 'package:idz/pages/item_detail/item_detail_controller.dart';
 import 'package:idz/routes/app_pages.dart';
@@ -134,7 +135,159 @@ class ItemDetailPage extends StatelessWidget {
                               },
                             ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
+                    // 連絡先
+                    Wrap(
+                      children: <Widget>[
+                        ...controller.itemData.value!.item.phoneNumbers
+                            .map((PhoneNumber phoneNumber) {
+                          return Visibility(
+                            visible: controller
+                                .itemData.value!.item.phoneNumbers.isNotEmpty,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: FilledButton(
+                                style: ButtonStyle(
+                                    padding: MaterialStateProperty.all<
+                                            EdgeInsetsGeometry>(
+                                        const EdgeInsets.only(left: 20)),
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                    fixedSize: MaterialStateProperty.all<Size>(
+                                        const Size.fromHeight(75)),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.blue),
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.grey[100]!),
+                                    textStyle: MaterialStateProperty.all(
+                                      const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        phoneNumber.contactName ?? '',
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                      Text(
+                                        phoneNumber.number,
+                                        style: const TextStyle(
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final bool result = await controller.call();
+                                  if (result == false) {
+                                    if (context.mounted) {
+                                      TelErrorDialog.show(
+                                        context,
+                                        message: '発信できません',
+                                        onTapOk: () {
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop();
+                                        },
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                          );
+                        }).toList()
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    // URL
+                    Visibility(
+                      visible: controller.itemData.value!.item.url != '',
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: FilledButton(
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              fixedSize: MaterialStateProperty.all<Size>(
+                                  const Size.fromHeight(70)),
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.lightBlue),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.grey[100]!),
+                              textStyle: MaterialStateProperty.all(
+                                const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              controller.itemData.value!.item.url!,
+                              textScaler: const TextScaler.linear(1),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onPressed: () async {
+                            await controller.accessWeb();
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        height: MediaQuery.of(context).size.width >
+                                MediaQuery.of(context).size.height
+                            ? MediaQuery.of(context).size.width * 0.1
+                            : MediaQuery.of(context).size.height * 0.25,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: SelectableText(
+                            controller.itemData.value!.item.description!,
+                            textScaler: const TextScaler.linear(1),
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const SizedBox(height: 60),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -343,131 +496,6 @@ class ItemDetailPage extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        height: MediaQuery.of(context).size.width >
-                                MediaQuery.of(context).size.height
-                            ? MediaQuery.of(context).size.width * 0.1
-                            : MediaQuery.of(context).size.height * 0.25,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            controller.itemData.value!.item.description!,
-                            textScaler: const TextScaler.linear(1),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Visibility(
-                      visible:
-                          controller.itemData.value!.item.phoneNumber != '',
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: FilledButton.tonalIcon(
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              fixedSize: MaterialStateProperty.all<Size>(
-                                  const Size.fromHeight(60)),
-                              foregroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.blue),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.grey[100]!),
-                              textStyle: MaterialStateProperty.all(
-                                const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
-                          icon: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Icon(Icons.phone),
-                          ),
-                          label: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              controller.itemData.value!.item.phoneNumber!,
-                              // style: const TextStyle(color: Colors.black87),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final bool result = await controller.call();
-                            if (result == false) {
-                              if (context.mounted) {
-                                TelErrorDialog.show(
-                                  context,
-                                  message: '発信できません',
-                                  onTapOk: () {
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop();
-                                  },
-                                );
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                    const SizedBox(height: 10),
-                    Visibility(
-                      visible: controller.itemData.value!.item.url != '',
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: FilledButton.tonalIcon(
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              fixedSize: MaterialStateProperty.all<Size>(
-                                  const Size.fromHeight(60)),
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.lightBlue),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.grey[100]!),
-                              textStyle: MaterialStateProperty.all(
-                                const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
-                          icon: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Icon(Icons.language),
-                          ),
-                          label: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              controller.itemData.value!.item.url!,
-                              textScaler: const TextScaler.linear(1),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          onPressed: () async {
-                            await controller.accessWeb();
-                          },
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 60),
                   ],

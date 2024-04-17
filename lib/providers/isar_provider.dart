@@ -23,6 +23,8 @@ Future<Isar> isarProvider({String? dirPath}) async {
     inspector: true,
     <CollectionSchema<dynamic>>[
       ItemSchema,
+      PhoneNumberSchema,
+      FileNameSchema,
     ],
     directory: dirPath ?? defaultDir.path,
   );

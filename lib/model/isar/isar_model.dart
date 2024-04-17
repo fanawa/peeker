@@ -35,10 +35,13 @@ class Item implements Base {
   @override
   DateTime? isarUpdatedAt;
 
+  final IsarLinks<PhoneNumber> phoneNumbers = IsarLinks<PhoneNumber>();
+
   Item copyWith({
     Id? id,
     String? name,
     String? phoneNumber,
+    IsarLinks<PhoneNumber>? phoneNumbers,
     String? url,
     String? description,
     String? fileName,
@@ -60,4 +63,71 @@ class Item implements Base {
       isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,
     );
   }
+}
+
+@collection
+class PhoneNumber implements Base {
+  PhoneNumber({
+    this.id,
+    required this.number,
+    this.contactName,
+    this.isarUpdatedAt,
+    this.isarCreatedAt,
+    this.isarDeletedAt,
+  });
+
+  @override
+  Id? id;
+  String number;
+  String? contactName;
+  @override
+  DateTime? isarCreatedAt;
+  @override
+  DateTime? isarDeletedAt;
+  @override
+  DateTime? isarUpdatedAt;
+
+  @Backlink(to: 'phoneNumbers')
+  final IsarLink<Item> item = IsarLink<Item>();
+
+  PhoneNumber copyWith({
+    Id? id,
+    String? number,
+    String? contactName,
+    DateTime? isarCreatedAt,
+    DateTime? isarDeletedAt,
+    DateTime? isarUpdatedAt,
+  }) {
+    return PhoneNumber(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      contactName: contactName ?? this.contactName,
+      isarCreatedAt: isarCreatedAt ?? this.isarCreatedAt,
+      isarDeletedAt: isarDeletedAt ?? this.isarDeletedAt,
+      isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,
+    );
+  }
+}
+
+@collection
+class FileName implements Base {
+  FileName({
+    this.id,
+    required this.fileName,
+    this.isarUpdatedAt,
+    this.isarCreatedAt,
+    this.isarDeletedAt,
+  });
+
+  @override
+  Id? id;
+  String fileName;
+  @override
+  DateTime? isarCreatedAt;
+  @override
+  DateTime? isarDeletedAt;
+  @override
+  DateTime? isarUpdatedAt;
+
+  final IsarLink<Item> item = IsarLink<Item>();
 }

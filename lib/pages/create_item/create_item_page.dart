@@ -68,6 +68,11 @@ class CreateItemPage extends StatelessWidget {
                         _fbKey.currentState!.value['name'] == null
                             ? ''
                             : _fbKey.currentState!.value['name'].toString();
+                    final String contactName =
+                        _fbKey.currentState!.value['contactName'] == null
+                            ? ''
+                            : _fbKey.currentState!.value['contactName']
+                                .toString();
                     final String phoneNumber =
                         _fbKey.currentState!.value['phoneNumber'] == null
                             ? ''
@@ -88,8 +93,10 @@ class CreateItemPage extends StatelessWidget {
                             : await controller.saveImageToFileSystem(
                                 controller.previewPicture.value!);
 
-                    final bool result = await controller.createNewItem(
+                    final bool result =
+                        await controller.createItemWithPhoneNumbers(
                       name,
+                      contactName,
                       phoneNumber,
                       url,
                       description,
