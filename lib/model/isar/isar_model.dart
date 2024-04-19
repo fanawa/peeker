@@ -71,6 +71,7 @@ class PhoneNumber implements Base {
     this.id,
     required this.number,
     this.contactName,
+    required this.itemId,
     this.isarUpdatedAt,
     this.isarCreatedAt,
     this.isarDeletedAt,
@@ -80,6 +81,7 @@ class PhoneNumber implements Base {
   Id? id;
   String number;
   String? contactName;
+  int itemId;
   @override
   DateTime? isarCreatedAt;
   @override
@@ -94,6 +96,7 @@ class PhoneNumber implements Base {
     Id? id,
     String? number,
     String? contactName,
+    int? itemId,
     DateTime? isarCreatedAt,
     DateTime? isarDeletedAt,
     DateTime? isarUpdatedAt,
@@ -102,6 +105,7 @@ class PhoneNumber implements Base {
       id: id ?? this.id,
       number: number ?? this.number,
       contactName: contactName ?? this.contactName,
+      itemId: itemId ?? this.itemId,
       isarCreatedAt: isarCreatedAt ?? this.isarCreatedAt,
       isarDeletedAt: isarDeletedAt ?? this.isarDeletedAt,
       isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,

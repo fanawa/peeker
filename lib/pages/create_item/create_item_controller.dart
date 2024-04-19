@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
+import 'package:idz/pages/create_item/create_item_page.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
 import 'package:idz/utils/environment_variables.dart';
@@ -18,6 +20,45 @@ class CreateItemPageController extends GetxController {
 
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
+
+  List<Map<String, dynamic>>? contactFields = <Map<String, dynamic>>[
+    <String, String>{'contactName': '', 'phoneNumber': ''},
+  ];
+
+  void addContactField() {
+    contactFields!.add(<String, String>{
+      'contactName': '',
+      'phoneNumber': '',
+    });
+    update();
+  }
+
+  void removeContactField(int index, GlobalKey<FormBuilderState> fbKey) {
+    if (contactFields != null && index < contactFields!.length) {
+      contactFields!.removeAt(index);
+      update();
+
+      // FormBuilderの状態を更新
+      final currentValues =
+          Map<String, dynamic>.from(fbKey.currentState!.value);
+      final newValues = <String, dynamic>{};
+
+      // 削除されたインデックス以降のフィールド名を更新
+      for (int i = index; i < contactFields!.length; i++) {
+        newValues['contactName_$i'] =
+            currentValues['contactName_${i + 1}'] ?? '';
+        newValues['phoneNumber_$i'] =
+            currentValues['phoneNumber_${i + 1}'] ?? '';
+      }
+
+      // 最後のフィールドを削除
+      newValues.remove('contactName_${contactFields!.length}');
+      newValues.remove('phoneNumber_${contactFields!.length}');
+
+      // FormBuilderの状態をパッチ
+      fbKey.currentState!.patchValue(newValues);
+    }
+  }
 
   /// 画像選択
   Future<void> selectPicture(BuildContext context) async {
@@ -91,16 +132,21 @@ class CreateItemPageController extends GetxController {
 // Item 作成後に PhoneNumber 追加
   Future<bool> createItemWithPhoneNumbers(
     String name,
-    String contactName,
-    String phoneNumber,
     String? url,
     String? description,
     String? fileName,
   ) async {
-    final int? itemId =
-        await createNewItem(name, phoneNumber, url, description, fileName);
+    final int? itemId = await createNewItem(name, url, description, fileName);
     if (itemId != null) {
-      await createPhoneNumbers(itemId, contactName, phoneNumber);
+      debugPrint('contactFields: $contactFields');
+      // contactFieldsの中のすべての連絡先情報をデータベースに追加
+      for (final Map<String, dynamic> contact in contactFields!) {
+        final String contactName = contact['contactName'].toString();
+        final String phoneNumber = contact['phoneNumber'].toString();
+        if (contactName.isNotEmpty && phoneNumber.isNotEmpty) {
+          await createPhoneNumbers(itemId, contactName, phoneNumber);
+        }
+      }
       return true;
     }
     return false;
@@ -109,7 +155,6 @@ class CreateItemPageController extends GetxController {
   // Item 追加
   Future<int?> createNewItem(
     String name,
-    String? phoneNumber,
     String? url,
     String? description,
     String? fileName,
@@ -118,7 +163,6 @@ class CreateItemPageController extends GetxController {
     final int maxOrder = await _getMaxDisplayOrder(isar);
     final Item input = Item()
       ..name = name
-      ..phoneNumber = phoneNumber!
       ..url = url ?? ''
       ..description = description ?? ''
       ..fileName = fileName ?? ''
@@ -156,11 +200,12 @@ class CreateItemPageController extends GetxController {
           }
 
           // PhoneNumbersに登録
-          final PhoneNumber input = PhoneNumber(number: phoneNumber)
-            ..contactName = contactName
-            ..isarCreatedAt = DateTime.now()
-            ..isarUpdatedAt = DateTime.now()
-            ..item.value = item;
+          final PhoneNumber input =
+              PhoneNumber(number: phoneNumber, itemId: itemId)
+                ..contactName = contactName
+                ..isarCreatedAt = DateTime.now()
+                ..isarUpdatedAt = DateTime.now()
+                ..item.value = item;
 
           await isar.phoneNumbers.put(input); // PhoneNumber を保存
 

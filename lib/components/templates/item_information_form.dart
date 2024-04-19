@@ -19,9 +19,13 @@ class ItemInformationForm extends StatelessWidget {
     this.initialValueUrl,
     this.initialValueDescription,
     this.onChangedName,
+    this.onChangedContactName,
     this.onChangedPhoneNumber,
     this.onChangedUrl,
     this.onChangedDescription,
+    this.contactFields,
+    this.onPressRemove,
+    this.onPressAdd,
   }) : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
   final String? previewPicturePath;
@@ -33,11 +37,18 @@ class ItemInformationForm extends StatelessWidget {
   final String? initialValueUrl;
   final String? initialValueDescription;
   final void Function(String?)? onChangedName;
+  final void Function(String?)? onChangedContactName;
   final void Function(String?)? onChangedPhoneNumber;
   final void Function(String?)? onChangedUrl;
   final void Function(String?)? onChangedDescription;
 
+  final List<Map<String, dynamic>>? contactFields;
+  final void Function(int)? onPressRemove;
+  final void Function()? onPressAdd;
+
   final RxBool isLoading = RxBool(false);
+
+  // List<Map<String, dynamic>> contactFields = [];
 
   @override
   Widget build(BuildContext context) {
@@ -141,101 +152,18 @@ class ItemInformationForm extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Container(
-                          child: Column(
-                            children: <Widget>[
-                              FormBuilderTextField(
-                                name: 'contactName',
-                                initialValue: initialValueContactName ?? '',
-                                textAlign: TextAlign.start,
-                                textAlignVertical: TextAlignVertical.center,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.multiline,
-                                onChanged: onChangedPhoneNumber,
-                                validator: FormBuilderValidators.compose(
-                                  <FormFieldValidator<String?>>[
-                                    FormBuilderValidators.maxLength(20),
-                                  ],
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                autofocus: true,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  focusedBorder: InputBorder.none,
-                                  filled: true,
-                                  errorMaxLines: 3,
-                                  border: InputBorder.none,
-                                  prefixIcon: Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 10,
-                                      right: 20,
-                                    ),
-                                    child: Text(
-                                      'ラベル', // Example prefix for Japan
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  prefixIconConstraints: BoxConstraints(
-                                    minWidth: 0,
-                                    minHeight: 0,
-                                  ),
-                                ),
-                              ),
-                              FormBuilderTextField(
-                                name: 'phoneNumber',
-                                initialValue: initialValuePhoneNumber ?? '',
-                                textAlign: TextAlign.start,
-                                textAlignVertical: TextAlignVertical.center,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.phone,
-                                onChanged: onChangedPhoneNumber,
-                                validator: FormBuilderValidators.compose(
-                                  <FormFieldValidator<String?>>[
-                                    FormBuilderValidators.maxLength(20),
-                                    FormBuilderValidators.integer(),
-                                  ],
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                autofocus: true,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  focusedBorder: InputBorder.none,
-                                  filled: true,
-                                  errorMaxLines: 3,
-                                  border: InputBorder.none,
-                                  prefixIcon: Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 10,
-                                      right: 10,
-                                    ),
-                                    child: Text(
-                                      '電話番号',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  prefixIconConstraints: BoxConstraints(
-                                    minWidth: 0,
-                                    minHeight: 0,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        for (int i = 0; i < contactFields!.length; i++) ...[
+                          _buildContactField(i, context),
+                          if (i < contactFields!.length - 1)
+                            const SizedBox(height: 10),
+                        ],
+                        if (contactFields!.isNotEmpty &&
+                            (contactFields![0]['contactName'] != '' ||
+                                contactFields![0]['phoneNumber'] != ''))
+                          TextButton(
+                            onPressed: onPressAdd,
+                            child: const Text('連絡先を追加'),
                           ),
-                        ),
                         const SizedBox(height: 20),
                         Container(
                           alignment: Alignment.centerLeft,
@@ -328,6 +256,135 @@ class ItemInformationForm extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildContactField(int index, BuildContext context) {
+    final bool isLast = index == contactFields!.length - 1;
+    final bool isFirst = index == 0;
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                FormBuilderTextField(
+                  name: 'contactName_$index',
+                  // initialValue: initialValueContactName ?? '',
+                  initialValue: contactFields![index]['contactName'] == null ||
+                          contactFields![index]['contactName'] == ''
+                      ? ''
+                      : contactFields![index]['contactName'].toString(),
+                  textAlign: TextAlign.start,
+                  textAlignVertical: TextAlignVertical.center,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.multiline,
+                  onChanged: (value) {
+                    contactFields![index]['contactName'] = value;
+                    // update(); // Update the UI if necessary
+                    onChangedContactName!.call(value);
+                  },
+
+                  validator: FormBuilderValidators.compose(
+                    <FormFieldValidator<String?>>[
+                      FormBuilderValidators.maxLength(20),
+                    ],
+                  ),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    focusedBorder: InputBorder.none,
+                    filled: true,
+                    errorMaxLines: 3,
+                    border: InputBorder.none,
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        right: 20,
+                      ),
+                      child: Text(
+                        'ラベル', // Example prefix for Japan
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    prefixIconConstraints: BoxConstraints(
+                      minWidth: 0,
+                      minHeight: 0,
+                    ),
+                  ),
+                ),
+                FormBuilderTextField(
+                  name: 'phoneNumber_$index',
+                  // initialValue: initialValuePhoneNumber ?? '',
+                  initialValue: contactFields![index]['phoneNumber'].toString(),
+                  textAlign: TextAlign.start,
+                  textAlignVertical: TextAlignVertical.center,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.phone,
+                  onChanged: onChangedPhoneNumber,
+                  validator: FormBuilderValidators.compose(
+                    <FormFieldValidator<String?>>[
+                      FormBuilderValidators.maxLength(20),
+                      FormBuilderValidators.integer(),
+                    ],
+                  ),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    focusedBorder: InputBorder.none,
+                    filled: true,
+                    errorMaxLines: 3,
+                    border: InputBorder.none,
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        right: 10,
+                      ),
+                      child: Text(
+                        '電話番号',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    prefixIconConstraints: BoxConstraints(
+                      minWidth: 0,
+                      minHeight: 0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isFirst || contactFields!.length > 1)
+            Container(
+              width: 50,
+              color: Colors.grey[100],
+              child: IconButton(
+                icon: const Icon(
+                  Icons.remove_circle_outline,
+                  color: Colors.red,
+                ),
+                onPressed: () => onPressRemove!(index), // Pass the index here
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -112,6 +112,19 @@ class HomePageController extends GetxController {
         },
       );
 
+      if (queryResult != null) {
+        for (final Item item in queryResult) {
+          // 各Itemについて、リンクされたphoneNumbersを明示的に読み込む
+          await isar.phoneNumbers
+              .filter()
+              .itemIdEqualTo(item.id!)
+              .findAll()
+              .then((List<PhoneNumber> phoneNumbers) {
+            item.phoneNumbers.addAll(phoneNumbers);
+          });
+        }
+      }
+
       final String storePath = (await getApplicationDocumentsDirectory()).path;
 
       itemData = queryResult!
@@ -138,94 +151,6 @@ class HomePageController extends GetxController {
       }
     }
     return itemData;
-  }
-
-  // Item 追加
-  Future<bool> createNewItem(
-    String name,
-    String? phoneNumber,
-    String? url,
-    String? description,
-    String? fileName,
-  ) async {
-    final Isar isar = await isarProvider();
-    final int maxOrder = await _getMaxDisplayOrder(isar);
-    final Item input = Item()
-      ..name = name
-      ..phoneNumber = phoneNumber!
-      ..url = url ?? ''
-      ..description = description ?? ''
-      ..fileName = fileName ?? ''
-      ..displayOrder = maxOrder
-      ..isarCreatedAt = DateTime.now()
-      ..isarUpdatedAt = DateTime.now();
-    try {
-      await isar.writeTxn(
-        () async {
-          final int itemId = await isar.items.put(input);
-          await createPhoneNumbers(itemId, 'contactName', phoneNumber);
-        },
-      );
-      return true;
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not create Item client Api: $e');
-      }
-      return false;
-    }
-  }
-
-  // phoneNumber追加
-  Future<void> createPhoneNumbers(
-    int itemId,
-    String? contactName,
-    String phoneNumber,
-  ) async {
-    final Isar isar = await isarProvider();
-
-    final Item? item = await isar.items.get(itemId);
-    debugPrint('createPhoneNumbers() item; $item');
-    if (item == null) {
-      debugPrint('Item not found for ID: $itemId');
-      return;
-    }
-
-    // PhoneNumbersに登録
-    final PhoneNumber input = PhoneNumber(number: phoneNumber)
-      ..number = phoneNumber
-      ..contactName = contactName
-      ..isarCreatedAt = DateTime.now()
-      ..isarUpdatedAt = DateTime.now()
-      ..item.value = item;
-
-    item.phoneNumbers.add(input); // PhoneNumber を Item のリンクに追加
-    debugPrint('item; $item');
-
-    try {
-      await isar.writeTxn(
-        () async {
-          await isar.phoneNumbers.put(input);
-          await item.phoneNumbers.save();
-        },
-      );
-      debugPrint('PhoneNumber added successfully');
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not create PhoneNumber client Api: $e');
-      }
-    }
-  }
-
-// displayOrderの最大値取得
-  Future<int> _getMaxDisplayOrder(Isar isar) async {
-    final List<Item?> items =
-        await isar.items.where().sortByDisplayOrderDesc().limit(1).findAll();
-
-    if (items.isNotEmpty) {
-      return items.first!.displayOrder!;
-    } else {
-      return 0; // デフォルト値、データが存在しない場合
-    }
   }
 
   // displayOrder更新処理

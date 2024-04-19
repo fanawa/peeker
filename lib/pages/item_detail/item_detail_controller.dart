@@ -44,11 +44,17 @@ class ItemDetailPageController extends GetxController {
     try {
       isar = await isarProvider();
       final Item? item = await isar.items.get(itemId);
-
+      await isar.phoneNumbers
+          .filter()
+          .itemIdEqualTo(item!.id!)
+          .findAll()
+          .then((List<PhoneNumber> phoneNumbers) {
+        item.phoneNumbers.addAll(phoneNumbers);
+      });
       final String nowDocumentPath =
           (await getApplicationDocumentsDirectory()).path;
 
-      final String imagePath = item!.fileName == null || item.fileName == ''
+      final String imagePath = item.fileName == null || item.fileName == ''
           ? ''
           : File(p.join(nowDocumentPath, item.fileName)).path;
       debugPrint('imagePath: $imagePath');

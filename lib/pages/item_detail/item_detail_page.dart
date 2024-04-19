@@ -86,7 +86,6 @@ class ItemDetailPage extends StatelessWidget {
                           controller.update();
                         },
                       );
-                      ;
                       if (result is ItemData && result != null) {
                         controller.updateItemData(result);
                       }
@@ -138,6 +137,8 @@ class ItemDetailPage extends StatelessWidget {
                     const SizedBox(height: 20),
                     // 連絡先
                     Wrap(
+                      spacing: 20, // 横の間隔
+                      runSpacing: 10, // 縦の間隔
                       children: <Widget>[
                         ...controller.itemData.value!.item.phoneNumbers
                             .map((PhoneNumber phoneNumber) {
@@ -160,7 +161,7 @@ class ItemDetailPage extends StatelessWidget {
                                       ),
                                     ),
                                     fixedSize: MaterialStateProperty.all<Size>(
-                                        const Size.fromHeight(75)),
+                                        const Size.fromHeight(60)),
                                     foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.blue),
@@ -220,7 +221,6 @@ class ItemDetailPage extends StatelessWidget {
                         }).toList()
                       ],
                     ),
-                    const SizedBox(height: 14),
                     // URL
                     Visibility(
                       visible: controller.itemData.value!.item.url != '',

@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/components/templates/item_information_form.dart';
+import 'package:idz/model/isar/isar_model.dart';
 import 'package:idz/pages/edit_item/edit_item_controller.dart';
 import 'package:idz/pages/home/models.dart';
 import 'package:idz/routes/app_pages.dart';
@@ -78,11 +79,6 @@ class EditItemPage extends StatelessWidget {
                                   ? ''
                                   : _fbKey.currentState!.value['name']
                                       .toString();
-                          final String phoneNumber =
-                              _fbKey.currentState!.value['phoneNumber'] == null
-                                  ? ''
-                                  : _fbKey.currentState!.value['phoneNumber']
-                                      .toString();
                           final String url =
                               _fbKey.currentState!.value['url'] == null
                                   ? ''
@@ -93,14 +89,38 @@ class EditItemPage extends StatelessWidget {
                                   ? ''
                                   : _fbKey.currentState!.value['description']
                                       .toString();
+
+                          // フォームからすべての連絡先フィールドを抽出
+                          final List<Map<String, dynamic>> extractedContacts =
+                              <Map<String, dynamic>>[];
+                          for (int index = 0;
+                              index < controller.contactFields!.length;
+                              index++) {
+                            final String contactName = _fbKey
+                                .currentState!.value['contactName_$index']
+                                .toString();
+                            final String phoneNumber = _fbKey
+                                .currentState!.value['phoneNumber_$index']
+                                .toString();
+                            if (contactName.isNotEmpty &&
+                                phoneNumber.isNotEmpty) {
+                              extractedContacts.add(<String, String>{
+                                'contactName': contactName,
+                                'phoneNumber': phoneNumber
+                              });
+                            }
+                          }
+                          // 保存前にコントローラの連絡先フィールドを更新
+                          controller.contactFields = extractedContacts;
+
                           final String? fileName =
                               controller.previewPicture.value == null
                                   ? itemData.imagePath
                                   : await controller.saveImageToFileSystem(
                                       controller.previewPicture.value!);
-                          final bool success = await controller.updateItem(
+                          final bool success =
+                              await controller.createItemWithPhoneNumbers(
                             name,
-                            phoneNumber,
                             url,
                             description,
                             fileName,
@@ -140,13 +160,22 @@ class EditItemPage extends StatelessWidget {
             child: ItemInformationForm(
               fbKey: _fbKey,
               previewPicturePath: controller.previewPicturePath,
+              contactFields: controller.contactFields,
               initialValueName: itemData.item.name,
               initialValueContactName:
-                  itemData.item.phoneNumbers.first.contactName, // TODO
-              initialValuePhoneNumber:
-                  itemData.item.phoneNumbers.first.number, // TODO
+                  itemData.item.phoneNumbers.first.contactName,
+              initialValuePhoneNumber: itemData.item.phoneNumbers.first.number,
               initialValueUrl: itemData.item.url,
               initialValueDescription: itemData.item.description,
+              onPressAdd: () {
+                controller.addContactField();
+              },
+              onPressRemove: (int index) {
+                controller.removeContactField(index, _fbKey);
+              },
+              onChangedContactName: (String? value) {
+                controller.update();
+              },
               onChangedName: (_) {
                 controller.checkFormChanges(_fbKey);
               },

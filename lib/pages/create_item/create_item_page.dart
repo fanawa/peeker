@@ -68,16 +68,6 @@ class CreateItemPage extends StatelessWidget {
                         _fbKey.currentState!.value['name'] == null
                             ? ''
                             : _fbKey.currentState!.value['name'].toString();
-                    final String contactName =
-                        _fbKey.currentState!.value['contactName'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['contactName']
-                                .toString();
-                    final String phoneNumber =
-                        _fbKey.currentState!.value['phoneNumber'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['phoneNumber']
-                                .toString();
                     final String url = _fbKey.currentState!.value['url'] == null
                         ? ''
                         : _fbKey.currentState!.value['url'].toString();
@@ -87,6 +77,29 @@ class CreateItemPage extends StatelessWidget {
                             : _fbKey.currentState!.value['description']
                                 .toString();
 
+                    // フォームからすべての連絡先フィールドを抽出
+                    final List<Map<String, dynamic>> extractedContacts =
+                        <Map<String, dynamic>>[];
+                    for (int index = 0;
+                        index < controller.contactFields!.length;
+                        index++) {
+                      final String contactName = _fbKey
+                          .currentState!.value['contactName_$index']
+                          .toString();
+                      final String phoneNumber = _fbKey
+                          .currentState!.value['phoneNumber_$index']
+                          .toString();
+                      if (contactName.isNotEmpty && phoneNumber.isNotEmpty) {
+                        extractedContacts.add(<String, String>{
+                          'contactName': contactName,
+                          'phoneNumber': phoneNumber
+                        });
+                      }
+                    }
+                    // 保存前にコントローラの連絡先フィールドを更新
+                    controller.contactFields = extractedContacts;
+
+                    // 画像ファイル名
                     final String? fileName =
                         controller.previewPicture.value == null
                             ? ''
@@ -96,8 +109,6 @@ class CreateItemPage extends StatelessWidget {
                     final bool result =
                         await controller.createItemWithPhoneNumbers(
                       name,
-                      contactName,
-                      phoneNumber,
                       url,
                       description,
                       fileName,
@@ -122,6 +133,16 @@ class CreateItemPage extends StatelessWidget {
             child: ItemInformationForm(
               fbKey: _fbKey,
               previewPicturePath: controller.previewPicture.value?.path,
+              contactFields: controller.contactFields,
+              onPressAdd: () {
+                controller.addContactField();
+              },
+              onPressRemove: (int index) {
+                controller.removeContactField(index, _fbKey);
+              },
+              onChangedContactName: (String? value) {
+                controller.update();
+              },
               onTapCancel: () async {
                 final bool isChanged = _fbKey.currentState!.isDirty ||
                     controller.previewPicture.value != null;
