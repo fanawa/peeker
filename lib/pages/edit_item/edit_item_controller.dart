@@ -193,10 +193,11 @@ class EditItemPageController extends GetxController {
           } else {
             // 新しい PhoneNumber を追加または更新
             final PhoneNumber newPhoneNumber = PhoneNumber(
-                id: contactId, // null なら新規、非 null なら更新
-                number: phoneNumber,
-                itemId: itemId,
-                contactName: contactName);
+              id: contactId, // null なら新規、非 null なら更新
+              number: phoneNumber,
+              itemId: itemId,
+              contactName: contactName,
+            );
             await isar.phoneNumbers.put(newPhoneNumber);
 
             // オプション：itemにphoneNumberをリンクする場合

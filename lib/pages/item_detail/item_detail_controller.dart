@@ -47,6 +47,7 @@ class ItemDetailPageController extends GetxController {
       await isar.phoneNumbers
           .filter()
           .itemIdEqualTo(item!.id!)
+          .sortByIsarCreatedAt()
           .findAll()
           .then((List<PhoneNumber> phoneNumbers) {
         item.phoneNumbers.addAll(phoneNumbers);

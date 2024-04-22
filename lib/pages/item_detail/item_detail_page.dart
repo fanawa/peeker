@@ -113,9 +113,6 @@ class ItemDetailPage extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      // foregroundDecoration: BoxDecoration(
-                      //   borderRadius: BorderRadius.circular(10),
-                      // ),
                       child: controller.itemData.value!.imagePath == null ||
                               controller.itemData.value!.imagePath == ''
                           ? Image.asset(
@@ -136,96 +133,116 @@ class ItemDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // 連絡先
-                    Wrap(
-                      spacing: 20, // 横の間隔
-                      runSpacing: 10, // 縦の間隔
-                      children: <Widget>[
-                        ...controller.itemData.value!.item.phoneNumbers
-                            .map((PhoneNumber phoneNumber) {
-                          return Visibility(
-                            visible: controller
-                                .itemData.value!.item.phoneNumbers.isNotEmpty,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: FilledButton(
-                                style: ButtonStyle(
-                                    padding: MaterialStateProperty.all<
-                                            EdgeInsetsGeometry>(
-                                        const EdgeInsets.only(left: 20)),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Wrap(
+                        spacing: 20, // 横の間隔
+                        // runSpacing: 10, // 縦の間隔
+                        children: <Widget>[
+                          ...controller.itemData.value!.item.phoneNumbers
+                              .toList()
+                              .asMap()
+                              .entries
+                              .map<Widget>((MapEntry<int, PhoneNumber> entry) {
+                            final int index = entry.key;
+                            final PhoneNumber phoneNumber = entry.value;
+                            return Column(
+                              children: <Widget>[
+                                if (index != 0)
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    child: Divider(
+                                      color: Colors.grey,
+                                      thickness: 0.1,
+                                    ),
+                                  ), // 連絡先間の区切り線
+                                Visibility(
+                                  visible: controller.itemData.value!.item
+                                      .phoneNumbers.isNotEmpty,
+                                  child: FilledButton(
+                                    style: ButtonStyle(
+                                        padding: MaterialStateProperty.all<
+                                                EdgeInsetsGeometry>(
+                                            const EdgeInsets.only(left: 20)),
+                                        fixedSize:
+                                            MaterialStateProperty.all<Size>(
+                                                const Size.fromHeight(64)),
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.blue),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.grey[100]!),
+                                        textStyle: MaterialStateProperty.all(
+                                          const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            phoneNumber.contactName ?? '',
+                                            style: const TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                          Text(
+                                            phoneNumber.number,
+                                            style: const TextStyle(
+                                              fontSize: 19,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    fixedSize: MaterialStateProperty.all<Size>(
-                                        const Size.fromHeight(60)),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.blue),
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.grey[100]!),
-                                    textStyle: MaterialStateProperty.all(
-                                      const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        phoneNumber.contactName ?? '',
-                                        style: const TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      Text(
-                                        phoneNumber.number,
-                                        style: const TextStyle(
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
+                                    onPressed: () async {
+                                      final bool result =
+                                          await controller.call();
+                                      if (result == false) {
+                                        if (context.mounted) {
+                                          TelErrorDialog.show(
+                                            context,
+                                            message: '発信できません',
+                                            onTapOk: () {
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .pop();
+                                            },
+                                          );
+                                        }
+                                      }
+                                    },
                                   ),
                                 ),
-                                onPressed: () async {
-                                  final bool result = await controller.call();
-                                  if (result == false) {
-                                    if (context.mounted) {
-                                      TelErrorDialog.show(
-                                        context,
-                                        message: '発信できません',
-                                        onTapOk: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                      );
-                                    }
-                                  }
-                                },
-                              ),
-                            ),
-                          );
-                        }).toList()
-                      ],
+                              ],
+                            );
+                          }).toList()
+                        ],
+                      ),
                     ),
                     // URL
                     Visibility(
                       visible: controller.itemData.value!.item.url != '',
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          top: 20,
+                          right: 20,
+                        ),
                         child: FilledButton(
                           style: ButtonStyle(
                               shape: MaterialStateProperty.all<
@@ -261,9 +278,12 @@ class ItemDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        top: 20,
+                        right: 20,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -286,218 +306,7 @@ class ItemDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    const SizedBox(height: 60),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Visibility(
-                          visible: controller.itemData.value!.item.url != '',
-                          child: SizedBox(
-                            height: 80,
-                            width: 120,
-                            child: GestureDetector(
-                              onTap: () async {
-                                await controller.accessWeb();
-                              },
-                              child: const Card(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.language,
-                                      size: 32,
-                                    ),
-                                    Text(
-                                      'Web',
-                                      textScaler: TextScaler.linear(1),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        // 電話番号
-                        Visibility(
-                          visible:
-                              controller.itemData.value!.item.phoneNumber != '',
-                          child: SizedBox(
-                            height: 80,
-                            width: 120,
-                            child: GestureDetector(
-                              onTap: () async {
-                                return showModalBottomSheet(
-                                  useRootNavigator: true,
-                                  context: context,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (BuildContext builder) {
-                                    return SafeArea(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Wrap(
-                                          children: <Widget>[
-                                            Container(
-                                              // height: 140,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: <Widget>[
-                                                  FilledButton(
-                                                    style: ButtonStyle(
-                                                      fixedSize:
-                                                          MaterialStateProperty
-                                                              .all<
-                                                                      Size>(
-                                                                  const Size
-                                                                      .fromHeight(
-                                                                      70)),
-                                                      foregroundColor:
-                                                          MaterialStateProperty
-                                                              .all<Color>(Colors
-                                                                  .lightBlue),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all<Color>(Colors
-                                                                  .grey[100]!),
-                                                      textStyle:
-                                                          MaterialStateProperty
-                                                              .all(
-                                                        const TextStyle(
-                                                          fontSize: 22,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(controller
-                                                          .itemData
-                                                          .value!
-                                                          .item
-                                                          .phoneNumber!),
-                                                    ),
-                                                    onPressed: () async {
-                                                      final bool result =
-                                                          await controller
-                                                              .call();
-                                                      if (context.mounted) {
-                                                        Navigator.of(context,
-                                                                rootNavigator:
-                                                                    true)
-                                                            .pop();
-                                                      }
-                                                      if (result == false) {
-                                                        if (context.mounted) {
-                                                          TelErrorDialog.show(
-                                                            context,
-                                                            message: '発信できません',
-                                                            onTapOk: () {
-                                                              Navigator.of(
-                                                                      context,
-                                                                      rootNavigator:
-                                                                          true)
-                                                                  .pop();
-                                                            },
-                                                          );
-                                                        }
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              height: 70,
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 14),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: FilledButton(
-                                                style: ButtonStyle(
-                                                  fixedSize:
-                                                      MaterialStateProperty.all<
-                                                              Size>(
-                                                          const Size.fromHeight(
-                                                              70)),
-                                                  foregroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          Colors.lightBlue),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          Colors.grey[100]!),
-                                                  textStyle:
-                                                      MaterialStateProperty.all(
-                                                    const TextStyle(
-                                                      fontSize: 22,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                child: const Center(
-                                                  child: Text('キャンセル'),
-                                                ),
-                                                onPressed: () async {
-                                                  if (context.mounted) {
-                                                    Navigator.of(
-                                                      context,
-                                                      rootNavigator: true,
-                                                    ).pop();
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Card(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.phone,
-                                      size: 32,
-                                    ),
-                                    Text(
-                                      '電話',
-                                      textScaler: TextScaler.linear(1),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
