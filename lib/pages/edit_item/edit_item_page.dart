@@ -18,7 +18,25 @@ class EditItemPage extends StatelessWidget {
     return GetBuilder<EditItemPageController>(
       init: EditItemPageController(),
       builder: (EditItemPageController controller) {
+        // itemDataがnullかどうかをチェック
+        if (controller.itemData.value == null) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('エラー'),
+            ),
+            body: Center(
+              child: Text('データが存在しません。'),
+            ),
+          );
+        }
         final ItemData itemData = controller.itemData.value!;
+        final PhoneNumber firstPhoneNumber =
+            itemData.item.phoneNumbers.isNotEmpty
+                ? itemData.item.phoneNumbers.first
+                : PhoneNumber(
+                    contactName: '',
+                    number: '',
+                    itemId: itemData.item.id!); // 連絡先が空の場合のデフォルト値
         return Scaffold(
           appBar: AppBar(
             title: const Text(
@@ -119,7 +137,7 @@ class EditItemPage extends StatelessWidget {
                                   : await controller.saveImageToFileSystem(
                                       controller.previewPicture.value!);
                           final bool success =
-                              await controller.createItemWithPhoneNumbers(
+                              await controller.updateItemWithPhoneNumbers(
                             name,
                             url,
                             description,
@@ -162,9 +180,8 @@ class EditItemPage extends StatelessWidget {
               previewPicturePath: controller.previewPicturePath,
               contactFields: controller.contactFields,
               initialValueName: itemData.item.name,
-              initialValueContactName:
-                  itemData.item.phoneNumbers.first.contactName,
-              initialValuePhoneNumber: itemData.item.phoneNumbers.first.number,
+              initialValueContactName: firstPhoneNumber.contactName,
+              initialValuePhoneNumber: firstPhoneNumber.number,
               initialValueUrl: itemData.item.url,
               initialValueDescription: itemData.item.description,
               onPressAdd: () {

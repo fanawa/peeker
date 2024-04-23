@@ -37,14 +37,23 @@ class EditItemPageController extends GetxController {
   void onInit() {
     itemData.value = Get.arguments as ItemData;
     previewPicturePath = itemData.value!.imagePath;
-    contactFields = itemData.value!.item.phoneNumbers.map((PhoneNumber phone) {
-      return <String, String>{
-        'contactName': phone.contactName ?? '',
-        'phoneNumber': phone.number,
-        'id': phone.id.toString(),
-      };
-    }).toList();
-
+    // 連絡先が存在しない場合、デフォルトの連絡先を追加
+    if (itemData.value!.item.phoneNumbers.isEmpty) {
+      contactFields.add(<String, dynamic>{
+        'contactName': '',
+        'phoneNumber': '',
+        'id': null, // 新規の連絡先として扱うためidはnull
+      });
+    } else {
+      contactFields =
+          itemData.value!.item.phoneNumbers.map((PhoneNumber phone) {
+        return <String, String>{
+          'contactName': phone.contactName ?? '',
+          'phoneNumber': phone.number,
+          'id': phone.id.toString(),
+        };
+      }).toList();
+    }
     initialItemData = itemData.value!.copyWith();
 
     update();
@@ -162,64 +171,8 @@ class EditItemPageController extends GetxController {
     }
   }
 
-//
-  Future<bool> createOrUpdateItemWithPhoneNumbers(
-      String name, String? url, String? description, String? fileName) async {
-    final int? itemId = await updateItem(name, url, description, fileName);
-    if (itemId != null) {
-      final Isar isar = await isarProvider();
-      final Item? item = await isar.items.get(itemId);
-      if (item == null) {
-        debugPrint('Item not found for ID: $itemId');
-        return false;
-      }
-      await isar.writeTxn(() async {
-        // 既存の PhoneNumber を取得
-        final List<PhoneNumber> existingPhoneNumbers =
-            await isar.phoneNumbers.filter().itemIdEqualTo(itemId).findAll();
-        final Set<int> existingIds =
-            existingPhoneNumbers.map((PhoneNumber phone) => phone.id!).toSet();
-
-        // 更新または追加
-        for (final Map<String, dynamic> contact in contactFields) {
-          final String contactName = contact['contactName'].toString();
-          final String phoneNumber = contact['phoneNumber'].toString();
-          final int contactId = int.parse(<String>['id'].toString());
-
-          if (contactId != null && !existingIds.remove(contactId)) {
-            // 既存の ID が削除リストにある場合、削除
-            await isar.phoneNumbers.delete(contactId);
-            await item.phoneNumbers.save();
-          } else {
-            // 新しい PhoneNumber を追加または更新
-            final PhoneNumber newPhoneNumber = PhoneNumber(
-              id: contactId, // null なら新規、非 null なら更新
-              number: phoneNumber,
-              itemId: itemId,
-              contactName: contactName,
-            );
-            await isar.phoneNumbers.put(newPhoneNumber);
-
-            // オプション：itemにphoneNumberをリンクする場合
-            item.phoneNumbers.add(newPhoneNumber);
-            await item.phoneNumbers.save();
-          }
-        }
-
-        // リストに残っている ID は削除
-        for (final int id in existingIds) {
-          await isar.phoneNumbers.delete(id);
-        }
-      });
-      return true;
-    } else {
-      debugPrint('Failed to update item or item ID was null');
-      return false;
-    }
-  }
-
 // Item 作成後に PhoneNumber 追加
-  Future<bool> createItemWithPhoneNumbers(
+  Future<bool> updateItemWithPhoneNumbers(
     String name,
     String? url,
     String? description,
@@ -227,16 +180,53 @@ class EditItemPageController extends GetxController {
   ) async {
     final int? itemId = await updateItem(name, url, description, fileName);
     if (itemId != null) {
-      debugPrint('contactFields: $contactFields');
-      // contactFieldsの中のすべての連絡先情報をデータベースに追加
-      for (final Map<String, dynamic> contact in contactFields!) {
-        final String contactName = contact['contactName'].toString();
-        final String phoneNumber = contact['phoneNumber'].toString();
-        if (contactName.isNotEmpty && phoneNumber.isNotEmpty) {
-          await updatePhoneNumber(itemId, contactName, phoneNumber);
+      final Isar isar = await isarProvider();
+      return isar.writeTxn(() async {
+        final List<PhoneNumber> existingPhoneNumbers =
+            await isar.phoneNumbers.filter().itemIdEqualTo(itemId).findAll();
+        final Map<int, PhoneNumber> existingIdToPhoneNumber =
+            <int, PhoneNumber>{
+          for (final PhoneNumber phone in existingPhoneNumbers) phone.id!: phone
+        };
+
+        final Set<int> processedIds = <int>{};
+
+        for (final Map<String, dynamic> contact in contactFields) {
+          final String contactName = contact['contactName'].toString();
+          final String phoneNumber = contact['phoneNumber'].toString();
+          final int? contactId = contact['id'] != null
+              ? int.tryParse(contact['id'].toString())
+              : null;
+
+          if (contactId != null &&
+              existingIdToPhoneNumber.containsKey(contactId)) {
+            // Update existing contact
+            final PhoneNumber existingPhone =
+                existingIdToPhoneNumber[contactId]!;
+            existingPhone.contactName = contactName;
+            existingPhone.number = phoneNumber;
+            await isar.phoneNumbers.put(existingPhone);
+            processedIds.add(contactId);
+          } else {
+            // Add new contact
+            final PhoneNumber newPhoneNumber = PhoneNumber(
+              number: phoneNumber,
+              contactName: contactName,
+              itemId: itemId,
+            );
+            await isar.phoneNumbers.put(newPhoneNumber);
+          }
         }
-      }
-      return true;
+
+        // Remove unprocessed existing contacts
+        for (final int id in existingIdToPhoneNumber.keys) {
+          if (!processedIds.contains(id)) {
+            await isar.phoneNumbers.delete(id);
+          }
+        }
+
+        return true;
+      });
     } else {
       debugPrint('Failed to update item or item ID was null');
       return false;
@@ -259,7 +249,7 @@ class EditItemPageController extends GetxController {
         await item.phoneNumbers.load(); // 必要に応じてリンクを明示的にロード
         final List<PhoneNumber> existingPhoneNumbers =
             item.phoneNumbers.toList();
-        for (PhoneNumber existingPhoneNumber in existingPhoneNumbers) {
+        for (final PhoneNumber existingPhoneNumber in existingPhoneNumbers) {
           await isar.phoneNumbers.delete(existingPhoneNumber.id!);
         }
 

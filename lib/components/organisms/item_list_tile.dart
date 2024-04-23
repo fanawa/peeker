@@ -21,22 +21,22 @@ class ItemListTile extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
               SizedBox(
-                height: 100, // TODO(a): マジックナンバー ITEM_HEIGHTに変更する
+                // height: 100, // imageのheight
+                height: MediaQuery.of(context).size.height * 0.12,
                 child: PageView.builder(
                   itemCount: 1, // TODO(a): listにしたい
                   controller: PageController(
-                    viewportFraction: 0.8,
+                    viewportFraction: 0.7,
                   ),
                   itemBuilder: (
                     BuildContext context,
                     int horizontalIndex,
                   ) {
                     return Container(
-                      height: 100,
-                      width: 120,
                       foregroundDecoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -54,13 +54,20 @@ class ItemListTile extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 8),
-              SizedBox(
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                height: MediaQuery.of(context).size.height * 0.05,
                 child: Text(
                   itemData.item.name == 'null' ? '' : itemData.item.name!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 3),
             ],
           ),
         ),

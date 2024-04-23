@@ -171,7 +171,7 @@ class ItemDetailPage extends StatelessWidget {
                                             const EdgeInsets.only(left: 20)),
                                         fixedSize:
                                             MaterialStateProperty.all<Size>(
-                                                const Size.fromHeight(64)),
+                                                const Size.fromHeight(60)),
                                         foregroundColor:
                                             MaterialStateProperty.all<Color>(
                                                 Colors.blue),

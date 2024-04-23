@@ -19,6 +19,24 @@ class HomePage extends StatelessWidget {
       init: HomePageController(),
       builder: (HomePageController controller) {
         return Scaffold(
+          bottomSheet: Expanded(
+            child: Container(
+              width: double.infinity,
+              height: 80,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.zero,
+              ),
+              alignment: Alignment.topCenter,
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(
+                '${controller.items.length.toString()}件',
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
           key: key,
           appBar: AppBar(
               title: const Text(

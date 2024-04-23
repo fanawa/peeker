@@ -22,21 +22,21 @@ class TopPage extends GetView<TopPageController> {
                 controller.pages[0],
                 controller.currentIndex.value != 0,
               ),
-            if (controller.check[1])
-              _buildOffstageNavigator(
-                controller.pages[1],
-                controller.currentIndex.value != 1,
-              ),
+            // if (controller.check[1])
+            //   _buildOffstageNavigator(
+            //     controller.pages[1],
+            //     controller.currentIndex.value != 1,
+            //   ),
           ],
         ),
-        bottomNavigationBar: controller.isVisibleBottomNav.value
-            ? CustomBottomNavigationBar(
-                currentIndex:
-                    NavManager.isBottomNavItem(controller.currentIndex.value)
-                        ? controller.currentIndex.value
-                        : controller.previousIndex.value,
-              )
-            : null,
+        // bottomNavigationBar: controller.isVisibleBottomNav.value
+        //     ? CustomBottomNavigationBar(
+        //         currentIndex:
+        //             NavManager.isBottomNavItem(controller.currentIndex.value)
+        //                 ? controller.currentIndex.value
+        //                 : controller.previousIndex.value,
+        //       )
+        //     : null,
       ),
     );
   }
