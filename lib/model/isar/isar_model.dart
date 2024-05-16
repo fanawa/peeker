@@ -36,6 +36,7 @@ class Item implements Base {
   DateTime? isarUpdatedAt;
 
   final IsarLinks<PhoneNumber> phoneNumbers = IsarLinks<PhoneNumber>();
+  final IsarLinks<FileName> fileNames = IsarLinks<FileName>();
 
   Item copyWith({
     Id? id,
@@ -118,6 +119,7 @@ class FileName implements Base {
   FileName({
     this.id,
     required this.fileName,
+    required this.itemId,
     this.isarUpdatedAt,
     this.isarCreatedAt,
     this.isarDeletedAt,
@@ -126,6 +128,7 @@ class FileName implements Base {
   @override
   Id? id;
   String fileName;
+  int itemId;
   @override
   DateTime? isarCreatedAt;
   @override
@@ -133,5 +136,6 @@ class FileName implements Base {
   @override
   DateTime? isarUpdatedAt;
 
+  @Backlink(to: 'fileNames')
   final IsarLink<Item> item = IsarLink<Item>();
 }

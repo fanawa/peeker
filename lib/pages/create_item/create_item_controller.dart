@@ -4,7 +4,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
-import 'package:idz/pages/create_item/create_item_page.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
 import 'package:idz/utils/environment_variables.dart';
@@ -25,6 +24,7 @@ class CreateItemPageController extends GetxController {
     <String, String>{'contactName': '', 'phoneNumber': ''},
   ];
 
+  // 連絡先フォーム追加
   void addContactField() {
     contactFields!.add(<String, String>{
       'contactName': '',
@@ -33,15 +33,16 @@ class CreateItemPageController extends GetxController {
     update();
   }
 
+  // 連絡先フォーム削除
   void removeContactField(int index, GlobalKey<FormBuilderState> fbKey) {
     if (contactFields != null && index < contactFields!.length) {
       contactFields!.removeAt(index);
       update();
 
       // FormBuilderの状態を更新
-      final currentValues =
+      final Map<String, dynamic> currentValues =
           Map<String, dynamic>.from(fbKey.currentState!.value);
-      final newValues = <String, dynamic>{};
+      final Map<String, dynamic> newValues = <String, dynamic>{};
 
       // 削除されたインデックス以降のフィールド名を更新
       for (int i = index; i < contactFields!.length; i++) {
@@ -125,9 +126,9 @@ class CreateItemPageController extends GetxController {
     }
   }
 
-  //**
-  //  Isar
-  //*/
+//**
+//  Isar
+//*/
 
 // Item 作成後に PhoneNumber 追加
   Future<bool> createItemWithPhoneNumbers(
@@ -136,7 +137,7 @@ class CreateItemPageController extends GetxController {
     String? description,
     String? fileName,
   ) async {
-    final int? itemId = await createNewItem(name, url, description, fileName);
+    final int? itemId = await createItem(name, url, description, fileName);
     if (itemId != null) {
       debugPrint('contactFields: $contactFields');
       // contactFieldsの中のすべての連絡先情報をデータベースに追加
@@ -153,7 +154,7 @@ class CreateItemPageController extends GetxController {
   }
 
   // Item 追加
-  Future<int?> createNewItem(
+  Future<int?> createItem(
     String name,
     String? url,
     String? description,
