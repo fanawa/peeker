@@ -11,8 +11,10 @@ class ItemInformationForm extends StatelessWidget {
     Key? key,
     required this.fbKey,
     this.previewPicturePath,
+    this.previewPicturePathList,
     required this.onTapCancel,
     required this.onTapAddImage,
+    required this.onTapRemoveImage,
     this.initialValueName,
     this.initialValueContactName,
     this.initialValuePhoneNumber,
@@ -29,8 +31,10 @@ class ItemInformationForm extends StatelessWidget {
   }) : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
   final String? previewPicturePath;
+  final List<String>? previewPicturePathList;
   final VoidCallback onTapCancel;
   final VoidCallback onTapAddImage;
+  final void Function(int) onTapRemoveImage;
   final String? initialValueName;
   final String? initialValueContactName;
   final String? initialValuePhoneNumber;
@@ -56,24 +60,66 @@ class ItemInformationForm extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 150,
-                  maxWidth: 150,
-                ),
-                child: previewPicturePath == null || previewPicturePath == ''
-                    ? Container(color: Colors.grey[100])
-                    : Image.file(
-                        File(previewPicturePath!),
-                        fit: BoxFit.fill,
-                      ),
-              ),
-              if (isLoading.value)
-                const Positioned.fill(
-                  child: Center(
-                    child: CustomCircularProgressIndicator(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(), // スクロール不要
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
                   ),
+                  itemCount: previewPicturePathList?.length ?? 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    final String? path = previewPicturePathList?[index];
+                    debugPrint('path: $path');
+                    return GestureDetector(
+                      onTap: () {
+                        // 削除するかの確認ダイアログ表示
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('削除確認'),
+                              content: Text('この画像を削除しますか？'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text('キャンセル'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    onTapRemoveImage(index); // インデックスを渡す
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('削除'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: path == null || path == ''
+                          ? Container(color: Colors.grey[100])
+                          : Image.file(
+                              File(path),
+                              fit: BoxFit.fill,
+                            ),
+                    );
+                  },
                 ),
+              ),
+              Obx(
+                () => isLoading.value
+                    ? const Positioned.fill(
+                        child: Center(
+                          child: CustomCircularProgressIndicator(),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
               const SizedBox(height: 6),
               FilledButton.tonalIcon(
                 style: ButtonStyle(

@@ -19,21 +19,19 @@ class HomePage extends StatelessWidget {
       init: HomePageController(),
       builder: (HomePageController controller) {
         return Scaffold(
-          bottomSheet: Expanded(
-            child: Container(
-              width: double.infinity,
-              height: 80,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.zero,
-              ),
-              alignment: Alignment.topCenter,
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(
-                '${controller.items.length.toString()}件',
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
+          bottomSheet: Container(
+            width: double.infinity,
+            height: 80,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.zero,
+            ),
+            alignment: Alignment.topCenter,
+            padding: const EdgeInsets.only(top: 20),
+            child: Text(
+              '${controller.items.length.toString()}件',
+              style: const TextStyle(
+                fontSize: 16,
               ),
             ),
           ),
@@ -113,7 +111,7 @@ class HomePage extends StatelessWidget {
                         // 登録済みカード
                         final ItemData row = controller.items[index];
                         return ItemListTile(
-                          key: Key(index.toString()),
+                          key: Key(row.item.id.toString()),
                           itemData: row,
                           onTap: () async {
                             await Get.toNamed<void>(

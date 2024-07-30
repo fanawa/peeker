@@ -5,16 +5,16 @@ import 'package:idz/model/isar/isar_model.dart';
 class ItemData {
   ItemData({
     required this.item,
-    this.imagePath,
+    required this.imagePaths,
   });
 
   final Item item;
-  final String? imagePath;
+  final List<String> imagePaths;
 
-  ItemData copyWith({Item? item, String? imagePath}) {
+  ItemData copyWith({Item? item, List<String>? imagePaths}) {
     return ItemData(
       item: item ?? this.item.copyWith(),
-      imagePath: imagePath ?? this.imagePath,
+      imagePaths: imagePaths ?? this.imagePaths,
     );
   }
 }

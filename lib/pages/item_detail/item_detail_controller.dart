@@ -26,6 +26,7 @@ class ItemDetailPageController extends GetxController {
   Rxn<ItemData> itemData = Rxn<ItemData>();
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
+  RxInt imageIndex = 0.obs;
 
   @override
   void onInit() {
@@ -36,6 +37,10 @@ class ItemDetailPageController extends GetxController {
   void updateItemData(ItemData updatedData) {
     itemData.value = updatedData;
     update();
+  }
+
+  void setImageIndex(int index) {
+    imageIndex.value = index;
   }
 
   /// Item データ取得
@@ -52,14 +57,28 @@ class ItemDetailPageController extends GetxController {
           .then((List<PhoneNumber> phoneNumbers) {
         item.phoneNumbers.addAll(phoneNumbers);
       });
+
+      // 各Itemについて、リンクされたfileNamesを明示的に読み込む
+      await isar.fileNames
+          .filter()
+          .itemIdEqualTo(item.id!)
+          .findAll()
+          .then((List<FileName> fileNames) {
+        item.fileNames.addAll(fileNames);
+      });
+
       final String nowDocumentPath =
           (await getApplicationDocumentsDirectory()).path;
 
-      final String imagePath = item.fileName == null || item.fileName == ''
-          ? ''
-          : File(p.join(nowDocumentPath, item.fileName)).path;
-      debugPrint('imagePath: $imagePath');
-      return ItemData(item: item, imagePath: imagePath);
+      final List<String> imagePaths = item.fileNames.map((fileName) {
+        final String imagePath = p.join(nowDocumentPath, fileName.fileName);
+        if (!File(imagePath).existsSync()) {
+          debugPrint('ファイルが存在しません: $imagePath');
+        }
+        return imagePath;
+      }).toList();
+
+      return ItemData(item: item, imagePaths: imagePaths);
     } on Exception catch (e) {
       if (kDebugMode) {
         debugPrint('Could not fetch item client Api: $e');

@@ -31,51 +31,6 @@ class HomePageController extends GetxController {
     update();
   }
 
-  /// 画像選択
-  Future<void> selectPicture(BuildContext context) async {
-    {
-      selectedPicture.value = null;
-
-      final XFile? selectedFile =
-          await ImageSelector.showBottomSheetMenu(context);
-      if (selectedFile == null) {
-        return;
-      }
-
-      if (await selectedFile.length() > 10000000) {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '画像サイズが大き過ぎます。\n10MB以下の画像を選択してください。',
-          );
-        }
-        return;
-      }
-      final List<int> headerBytes = await selectedFile.openRead(0, 12).first;
-      final String? mimeType = lookupMimeType(
-        p.basenameWithoutExtension(selectedFile.path),
-        headerBytes: headerBytes,
-      );
-      if (EnvironmentVariables.allowedMimeType.contains(mimeType)) {
-        selectedPicture.value = selectedFile;
-        update();
-      } else {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '選択されたファイルは画像ではありません。\n画像ファイルを選択してください。',
-          );
-        } else {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'Error',
-            text:
-                'The selected file is not an image. \nPlease select an image file.',
-          );
-        }
-      }
-    }
-  }
-
   /// アプリ内フォルダに画像を保管
   /// isarにはファイル名で保管する(保存領域までのパスが変動するため)
   Future<String?> saveImageToFileSystem(
@@ -122,6 +77,15 @@ class HomePageController extends GetxController {
               .then((List<PhoneNumber> phoneNumbers) {
             item.phoneNumbers.addAll(phoneNumbers);
           });
+
+          // 各Itemについて、リンクされたfileNamesを明示的に読み込む
+          await isar.fileNames
+              .filter()
+              .itemIdEqualTo(item.id!)
+              .findAll()
+              .then((List<FileName> fileNames) {
+            item.fileNames.addAll(fileNames);
+          });
         }
       }
 
@@ -130,15 +94,19 @@ class HomePageController extends GetxController {
       itemData = queryResult!
           .map((Item item) {
             // ファイル名からフルパスを生成
-            final String imagePath =
-                item.fileName == null || item.fileName == ''
-                    ? ''
-                    : p.join(storePath, item.fileName);
-            if (!File(imagePath).existsSync()) {
-              debugPrint('ファイルが存在しません: $imagePath');
-            }
-            debugPrint('imagePath: $imagePath');
-            return ItemData(item: item, imagePath: imagePath);
+            final List<String> imagePaths = item.fileNames.map((fileName) {
+              final String imagePath =
+                  fileName.fileName == null || fileName.fileName == ''
+                      ? ''
+                      : p.join(storePath, fileName.fileName);
+              if (!File(imagePath).existsSync()) {
+                debugPrint('ファイルが存在しません: $imagePath');
+              }
+              debugPrint('imagePath: $imagePath');
+              return imagePath;
+            }).toList();
+
+            return ItemData(item: item, imagePaths: imagePaths);
           })
           .where((ItemData? item) => item != null)
           .cast<ItemData>()

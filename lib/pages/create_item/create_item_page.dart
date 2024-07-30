@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
@@ -100,18 +101,24 @@ class CreateItemPage extends StatelessWidget {
                     controller.contactFields = extractedContacts;
 
                     // 画像ファイル名
-                    final String? fileName =
-                        controller.previewPicture.value == null
-                            ? ''
-                            : await controller.saveImageToFileSystem(
-                                controller.previewPicture.value!);
+                    // final String? fileName =
+                    //     controller.previewPicture.value == null
+                    //         ? ''
+                    //         : await controller.saveImageToFileSystem(
+                    //             controller.previewPicture.value!);
+
+                    // 画像ファイル名
+                    final List<XFile> selectedPictures =
+                        controller.getSelectedPictures();
+                    final List<String> fileNames = await controller
+                        .saveImagesToFileSystem(selectedPictures);
 
                     final bool result =
                         await controller.createItemWithPhoneNumbers(
                       name,
                       url,
                       description,
-                      fileName,
+                      fileNames,
                     );
                     if (result != null) {
                       controller.previewPicture.value = null;
@@ -123,9 +130,7 @@ class CreateItemPage extends StatelessWidget {
                     }
                   }
                 },
-                child: const Text(
-                  '完了',
-                ),
+                child: const Text('完了'),
               ),
             ],
           ),
@@ -133,6 +138,9 @@ class CreateItemPage extends StatelessWidget {
             child: ItemInformationForm(
               fbKey: _fbKey,
               previewPicturePath: controller.previewPicture.value?.path,
+              previewPicturePathList: controller.selectedPictures
+                  .map<String>((XFile? picture) => picture?.path ?? '')
+                  .toList(),
               contactFields: controller.contactFields,
               onPressAdd: () {
                 controller.addContactField();
@@ -182,16 +190,14 @@ class CreateItemPage extends StatelessWidget {
               },
               onTapAddImage: () async {
                 // 画像選択 or カメラ起動
-                await controller.selectPicture(context);
+                await controller.selectPictures(context);
                 if (!context.mounted) {
                   return;
                 }
-                if (controller.selectedPicture.value != null) {
-                  controller.previewPicture.value =
-                      controller.selectedPicture.value;
-                  controller.selectedPicture.value = null;
-                  controller.update();
-                }
+                controller.update();
+              },
+              onTapRemoveImage: (int index) {
+                controller.removePictureAtIndex(index);
               },
             ),
           ),

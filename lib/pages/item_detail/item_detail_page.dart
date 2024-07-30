@@ -17,6 +17,8 @@ class ItemDetailPage extends StatelessWidget {
     return GetBuilder<ItemDetailPageController>(
       init: ItemDetailPageController(),
       builder: (ItemDetailPageController controller) {
+        final PageController pageController =
+            PageController(viewportFraction: 0.7);
         return SelectionArea(
           child: Scaffold(
             appBar: AppBar(
@@ -103,8 +105,8 @@ class ItemDetailPage extends StatelessWidget {
                     Container(
                       height: MediaQuery.of(context).size.width >
                               MediaQuery.of(context).size.height
-                          ? MediaQuery.of(context).size.height * 0.5
-                          : MediaQuery.of(context).size.height * 0.28,
+                          ? MediaQuery.of(context).size.height * 0.3
+                          : MediaQuery.of(context).size.height * 0.2,
                       width: MediaQuery.of(context).size.width >
                               MediaQuery.of(context).size.height
                           ? 130
@@ -113,23 +115,70 @@ class ItemDetailPage extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: controller.itemData.value!.imagePath == null ||
-                              controller.itemData.value!.imagePath == ''
-                          ? Image.asset(
-                              'assets/images/noimage.png',
-                              fit: BoxFit.fitHeight,
-                            )
-                          : GestureDetector(
-                              child: Image.file(
-                                File(controller.itemData.value!.imagePath!),
-                                fit: BoxFit.fitHeight,
-                              ),
-                              onTap: () async {
-                                debugPrint('onTap()');
-                                await controller.onTapImage(
-                                    controller.itemData.value!.imagePath!);
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: PageView.builder(
+                              controller: pageController,
+                              itemCount:
+                                  controller.itemData.value!.imagePaths.length,
+                              onPageChanged: (int index) {
+                                controller.setImageIndex(index);
+                              },
+                              itemBuilder: (BuildContext context, int index) {
+                                final String imagePath = controller
+                                    .itemData.value!.imagePaths[index];
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: GestureDetector(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: imagePath.isEmpty
+                                          ? Image.asset(
+                                              'assets/images/noimage.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              File(imagePath),
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                    onTap: () async {
+                                      debugPrint('onTap()');
+                                      await controller.onTapImage(imagePath);
+                                    },
+                                  ),
+                                );
                               },
                             ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List<Widget>.generate(
+                              controller.itemData.value!.imagePaths.length,
+                              (int index) {
+                                return Obx(() {
+                                  return Container(
+                                    width: 8.0,
+                                    height: 8.0,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 2.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:
+                                          controller.imageIndex.value == index
+                                              ? Colors.black
+                                              : Colors.grey,
+                                    ),
+                                  );
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 20),
                     // 連絡先

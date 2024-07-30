@@ -21,35 +21,37 @@ class ItemListTile extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               const SizedBox(height: 16),
               SizedBox(
-                // height: 100, // imageのheight
                 height: MediaQuery.of(context).size.height * 0.12,
                 child: PageView.builder(
-                  itemCount: 1, // TODO(a): listにしたい
+                  itemCount: itemData.imagePaths.isEmpty
+                      ? 1
+                      : itemData.imagePaths.length,
                   controller: PageController(
-                    viewportFraction: 0.7,
+                    viewportFraction: 0.8,
                   ),
                   itemBuilder: (
                     BuildContext context,
                     int horizontalIndex,
                   ) {
-                    return Container(
-                      foregroundDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Container(
+                        foregroundDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: itemData.imagePaths.isEmpty
+                            ? Image.asset(
+                                'assets/images/noimage.png',
+                                fit: BoxFit.fitHeight,
+                              )
+                            : Image.file(
+                                File(itemData.imagePaths[horizontalIndex]),
+                                fit: BoxFit.fitHeight,
+                              ),
                       ),
-                      child: itemData.item.fileName == null ||
-                              itemData.item.fileName == ''
-                          ? Image.asset(
-                              'assets/images/noimage.png',
-                              fit: BoxFit.fitHeight,
-                            )
-                          : Image.file(
-                              File(itemData.imagePath!),
-                              fit: BoxFit.fitHeight,
-                            ),
                     );
                   },
                 ),
