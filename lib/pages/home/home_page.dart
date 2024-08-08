@@ -53,7 +53,6 @@ class HomePage extends StatelessWidget {
                       id: NavManager.getNavigationRouteId(Routes.HOME),
                     );
                     if (result is bool) {
-                      debugPrint('result is bool; $result');
                       await controller.fetchItemData().then((_) async {
                         controller.update();
                       });

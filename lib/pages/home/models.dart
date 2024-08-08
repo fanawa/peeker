@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:idz/model/isar/isar_model.dart';
 
 class ItemData {

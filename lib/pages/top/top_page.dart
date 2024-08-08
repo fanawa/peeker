@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/organisms/custom_bottom_navigation_bar.dart';
 import 'package:idz/pages/root/root_page.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
-import 'package:idz/routes/app_pages.dart';
 
 class TopPage extends GetView<TopPageController> {
   TopPage({Key? key}) : super(key: key);

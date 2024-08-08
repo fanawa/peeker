@@ -10,8 +10,7 @@ class ItemInformationForm extends StatelessWidget {
   ItemInformationForm({
     Key? key,
     required this.fbKey,
-    this.previewPicturePath,
-    this.previewPicturePathList,
+    this.previewPicturePaths,
     required this.onTapCancel,
     required this.onTapAddImage,
     required this.onTapRemoveImage,
@@ -20,18 +19,13 @@ class ItemInformationForm extends StatelessWidget {
     this.initialValuePhoneNumber,
     this.initialValueUrl,
     this.initialValueDescription,
-    this.onChangedName,
-    this.onChangedContactName,
-    this.onChangedPhoneNumber,
-    this.onChangedUrl,
-    this.onChangedDescription,
+    this.onChanged,
     this.contactFields,
     this.onPressRemove,
     this.onPressAdd,
   }) : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
-  final String? previewPicturePath;
-  final List<String>? previewPicturePathList;
+  final List<String>? previewPicturePaths;
   final VoidCallback onTapCancel;
   final VoidCallback onTapAddImage;
   final void Function(int) onTapRemoveImage;
@@ -40,11 +34,7 @@ class ItemInformationForm extends StatelessWidget {
   final String? initialValuePhoneNumber;
   final String? initialValueUrl;
   final String? initialValueDescription;
-  final void Function(String?)? onChangedName;
-  final void Function(String?)? onChangedContactName;
-  final void Function(String?)? onChangedPhoneNumber;
-  final void Function(String?)? onChangedUrl;
-  final void Function(String?)? onChangedDescription;
+  final void Function(String?)? onChanged;
 
   final List<Map<String, dynamic>>? contactFields;
   final void Function(int)? onPressRemove;
@@ -64,37 +54,44 @@ class ItemInformationForm extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: GridView.builder(
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(), // スクロール不要
+                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     childAspectRatio: 1,
                   ),
-                  itemCount: previewPicturePathList?.length ?? 1,
+                  itemCount: previewPicturePaths?.length ?? 1,
                   itemBuilder: (BuildContext context, int index) {
-                    final String? path = previewPicturePathList?[index];
-                    debugPrint('path: $path');
+                    final String? path = previewPicturePaths?[index];
                     return GestureDetector(
                       onTap: () {
-                        // 削除するかの確認ダイアログ表示
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('削除確認'),
-                              content: Text('この画像を削除しますか？'),
+                              content: const Text(
+                                'この画像を削除しますか？',
+                                textAlign: TextAlign.center,
+                              ),
                               actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text('キャンセル'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    onTapRemoveImage(index); // インデックスを渡す
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('削除'),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('キャンセル'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        onTapRemoveImage(index);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('削除'),
+                                    ),
+                                  ],
                                 ),
                               ],
                             );
@@ -131,7 +128,6 @@ class ItemInformationForm extends StatelessWidget {
                 onPressed: onTapAddImage,
               ),
               const SizedBox(height: 20),
-              //// 名前
               Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 10),
@@ -160,7 +156,7 @@ class ItemInformationForm extends StatelessWidget {
                             textAlignVertical: TextAlignVertical.center,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.multiline,
-                            onChanged: onChangedName,
+                            onChanged: onChanged,
                             validator: FormBuilderValidators.compose(
                               <FormFieldValidator<String?>>[
                                 FormBuilderValidators.required(
@@ -199,8 +195,9 @@ class ItemInformationForm extends StatelessWidget {
                               ),
                               Visibility(
                                 visible: contactFields!.isNotEmpty &&
-                                    (contactFields![0]['contactName'] != '' ||
-                                        contactFields![0]['phoneNumber'] != ''),
+                                    (contactFields!.last['contactName'] != '' ||
+                                        contactFields!.last['phoneNumber'] !=
+                                            ''),
                                 maintainSize: true,
                                 maintainAnimation: true,
                                 maintainState: true,
@@ -246,7 +243,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.url,
-                          onChanged: onChangedUrl,
+                          onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.url(),
@@ -288,7 +285,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.newline,
                           keyboardType: TextInputType.multiline,
-                          onChanged: onChangedDescription,
+                          onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.maxLength(200)
@@ -345,7 +342,7 @@ class ItemInformationForm extends StatelessWidget {
                       keyboardType: TextInputType.multiline,
                       onChanged: (String? value) {
                         contactFields![index]['contactName'] = value;
-                        onChangedContactName!.call(value);
+                        onChanged!.call(value);
                       },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
@@ -391,11 +388,13 @@ class ItemInformationForm extends StatelessWidget {
                       textAlignVertical: TextAlignVertical.center,
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.phone,
-                      onChanged: onChangedPhoneNumber,
+                      onChanged: (String? value) {
+                        contactFields![index]['phoneNumber'] = value;
+                        onChanged!.call(value);
+                      },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
                           FormBuilderValidators.maxLength(20),
-                          FormBuilderValidators.integer(),
                         ],
                       ),
                       style: const TextStyle(

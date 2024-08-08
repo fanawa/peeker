@@ -1,19 +1,13 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
 import 'package:idz/pages/home/models.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
-import 'package:idz/utils/environment_variables.dart';
-import 'package:idz/utils/image_selector.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:isar/isar.dart';
-import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -94,7 +88,7 @@ class HomePageController extends GetxController {
       itemData = queryResult!
           .map((Item item) {
             // ファイル名からフルパスを生成
-            final List<String> imagePaths = item.fileNames.map((fileName) {
+            final List<String> imagePaths = item.fileNames.map((FileName fileName) {
               final String imagePath =
                   fileName.fileName == null || fileName.fileName == ''
                       ? ''
@@ -102,7 +96,6 @@ class HomePageController extends GetxController {
               if (!File(imagePath).existsSync()) {
                 debugPrint('ファイルが存在しません: $imagePath');
               }
-              debugPrint('imagePath: $imagePath');
               return imagePath;
             }).toList();
 

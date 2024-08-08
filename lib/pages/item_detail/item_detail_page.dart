@@ -18,7 +18,7 @@ class ItemDetailPage extends StatelessWidget {
       init: ItemDetailPageController(),
       builder: (ItemDetailPageController controller) {
         final PageController pageController =
-            PageController(viewportFraction: 0.7);
+            PageController(viewportFraction: 0.6);
         return SelectionArea(
           child: Scaffold(
             appBar: AppBar(
@@ -120,34 +120,43 @@ class ItemDetailPage extends StatelessWidget {
                           Expanded(
                             child: PageView.builder(
                               controller: pageController,
-                              itemCount:
-                                  controller.itemData.value!.imagePaths.length,
+                              itemCount: controller
+                                      .itemData.value!.imagePaths.isNotEmpty
+                                  ? controller.itemData.value!.imagePaths.length
+                                  : 1,
                               onPageChanged: (int index) {
                                 controller.setImageIndex(index);
                               },
                               itemBuilder: (BuildContext context, int index) {
                                 final String imagePath = controller
-                                    .itemData.value!.imagePaths[index];
+                                        .itemData.value!.imagePaths.isNotEmpty
+                                    ? controller
+                                        .itemData.value!.imagePaths[index]
+                                    : 'assets/images/noimage.png';
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 5),
                                   child: GestureDetector(
+                                    onTap:
+                                        imagePath != 'assets/images/noimage.png'
+                                            ? () async {
+                                                await controller
+                                                    .onTapImage(imagePath);
+                                              }
+                                            : null,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: imagePath.isEmpty
+                                      child: imagePath ==
+                                              'assets/images/noimage.png'
                                           ? Image.asset(
                                               'assets/images/noimage.png',
-                                              fit: BoxFit.cover,
+                                              fit: BoxFit.fitHeight,
                                             )
                                           : Image.file(
                                               File(imagePath),
                                               fit: BoxFit.cover,
                                             ),
                                     ),
-                                    onTap: () async {
-                                      debugPrint('onTap()');
-                                      await controller.onTapImage(imagePath);
-                                    },
                                   ),
                                 );
                               },

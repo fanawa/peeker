@@ -34,17 +34,10 @@ class CreateItemPageController extends GetxController {
     update();
   }
 
-  // 画像を削除するメソッド
-  // void removePicture(XFile file) {
-  //   selectedPictures.remove(file);
-  //   update();
-  // }
-
   // インデックスで画像を削除するメソッド
   void removePictureAtIndex(int index) {
     if (index >= 0 && index < selectedPictures.length) {
       selectedPictures.removeAt(index);
-      debugPrint('selectedPictures: $selectedPictures');
       update();
     }
   }
@@ -57,17 +50,14 @@ class CreateItemPageController extends GetxController {
         .toList();
   }
 
-  /// 画像選択
-  Future<void> selectPicture(BuildContext context) async {
-    {
-      selectedPicture.value = null;
+  Future<void> selectPictures(BuildContext context) async {
+    final List<XFile>? selectedFiles =
+        await ImageSelector.showBottomSheetMenu(context);
+    if (selectedFiles == null || selectedFiles.isEmpty) {
+      return;
+    }
 
-      final XFile? selectedFile =
-          await ImageSelector.showBottomSheetMenu(context);
-      if (selectedFile == null) {
-        return;
-      }
-
+    for (final XFile selectedFile in selectedFiles) {
       if (await selectedFile.length() > 10000000) {
         if (context.mounted) {
           await FlutterPlatformAlert.showAlert(
@@ -75,7 +65,7 @@ class CreateItemPageController extends GetxController {
             text: '画像サイズが大き過ぎます。\n10MB以下の画像を選択してください。',
           );
         }
-        return;
+        continue;
       }
       final List<int> headerBytes = await selectedFile.openRead(0, 12).first;
       final String? mimeType = lookupMimeType(
@@ -83,55 +73,15 @@ class CreateItemPageController extends GetxController {
         headerBytes: headerBytes,
       );
       if (EnvironmentVariables.allowedMimeType.contains(mimeType)) {
-        selectedPicture.value = selectedFile;
-        update();
+        addPicture(selectedFile);
       } else {
         if (context.mounted) {
           await FlutterPlatformAlert.showAlert(
             windowTitle: 'エラー',
             text: '選択されたファイルは画像ではありません。\n画像ファイルを選択してください。',
           );
-        } else {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'Error',
-            text:
-                'The selected file is not an image. \nPlease select an image file.',
-          );
         }
       }
-    }
-  }
-
-  // 画像選択(複数)
-  Future<void> selectPictures(BuildContext context) async {
-    final ImagePicker picker = ImagePicker();
-    final List<XFile> images = await picker.pickMultiImage();
-
-    if (images != null) {
-      selectedPictures.addAll(images);
-      update();
-      debugPrint('selectedPictures: ${selectedPictures.toString()}');
-    }
-  }
-
-  //// 消す
-  /// アプリ内フォルダに画像を保管
-  /// isarにはファイル名で保管する(保存領域までのパスが変動するため)
-  Future<String?> saveImageToFileSystem(
-    XFile imageData,
-  ) async {
-    try {
-      final String fileName =
-          'IDz_image_${DateTime.now().millisecondsSinceEpoch}.png';
-      final String storePath = (await getApplicationDocumentsDirectory()).path;
-      final String imagePath = '$storePath/$fileName';
-      await imageData.saveTo(imagePath);
-      return fileName;
-    } on Exception catch (e) {
-      if (kDebugMode) {
-        debugPrint('Could not save image client Api: $e');
-      }
-      return null;
     }
   }
 
@@ -139,7 +89,7 @@ class CreateItemPageController extends GetxController {
   /// isarにはファイル名で保管する(保存領域までのパスが変動するため)
   Future<List<String>> saveImagesToFileSystem(List<XFile> images) async {
     final List<String> fileNames = <String>[];
-    for (XFile image in images) {
+    for (final XFile image in images) {
       final String fileName =
           'IDz_image_${DateTime.now().millisecondsSinceEpoch}.png';
       final String storePath = (await getApplicationDocumentsDirectory()).path;
@@ -191,28 +141,6 @@ class CreateItemPageController extends GetxController {
 //  Isar
 //*/
 
-// Item 作成後に PhoneNumber 追加
-  // Future<bool> createItemWithPhoneNumbers(
-  //   String name,
-  //   String? url,
-  //   String? description,
-  //   String? fileName,
-  // ) async {
-  //   final int? itemId = await createItem(name, url, description, fileName);
-  //   if (itemId != null) {
-  //     debugPrint('contactFields: $contactFields');
-  //     // contactFieldsの中のすべての連絡先情報をデータベースに追加
-  //     for (final Map<String, dynamic> contact in contactFields!) {
-  //       final String contactName = contact['contactName'].toString();
-  //       final String phoneNumber = contact['phoneNumber'].toString();
-  //       if (contactName.isNotEmpty && phoneNumber.isNotEmpty) {
-  //         await createPhoneNumbers(itemId, contactName, phoneNumber);
-  //       }
-  //     }
-  //     return true;
-  //   }
-  //   return false;
-  // }
   Future<bool> createItemWithPhoneNumbers(
     String name,
     String? url,
@@ -221,12 +149,11 @@ class CreateItemPageController extends GetxController {
   ) async {
     final int? itemId = await createItem(name, url, description);
     if (itemId != null) {
-      debugPrint('contactFields: $contactFields');
       // contactFieldsの中のすべての連絡先情報をデータベースに追加
       for (final Map<String, dynamic> contact in contactFields!) {
         final String contactName = contact['contactName'].toString();
         final String phoneNumber = contact['phoneNumber'].toString();
-        if (contactName.isNotEmpty && phoneNumber.isNotEmpty) {
+        if (contactName.isNotEmpty || phoneNumber.isNotEmpty) {
           await createPhoneNumbers(itemId, contactName, phoneNumber);
         }
       }
