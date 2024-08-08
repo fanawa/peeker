@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_platform_alert/flutter_platform_alert.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:idz/components/organisms/item_list_tile.dart';
 import 'package:idz/pages/home/home_page_controller.dart';
@@ -108,23 +110,68 @@ class HomePage extends StatelessWidget {
       },
       children: <Widget>[
         for (int index = 0; index < controller.items.length; index++)
-          ItemListTile(
-            key: Key(controller.items[index].item.id.toString()),
-            itemData: controller.items[index],
-            isList: true,
-            onTap: () async {
-              await Get.toNamed<void>(
-                Routes.ITEM_DETAIL,
-                arguments: controller.items[index],
-                id: NavManager.getNavigationRouteId(Routes.HOME),
-              )!
-                  .then(
-                (void value) async {
-                  await controller.fetchItemData();
-                  controller.update();
-                },
-              );
-            },
+          Slidable(
+            key: UniqueKey(),
+            endActionPane: ActionPane(
+              extentRatio: 0.3,
+              motion: const StretchMotion(),
+              dismissible: null,
+              children: <Widget>[
+                SlidableAction(
+                  onPressed: (_) async {
+                    final CustomButton result =
+                        await FlutterPlatformAlert.showCustomAlert(
+                      windowTitle: '削除しますか？',
+                      text: '',
+                      positiveButtonTitle: 'OK',
+                      negativeButtonTitle: 'キャンセル',
+                    );
+                    if (!context.mounted) {
+                      return;
+                    }
+                    switch (result) {
+                      case CustomButton.positiveButton:
+                        // OK
+                        final bool result = await controller
+                            .deleteItem(controller.items[index].item.id!);
+                        if (result != null) {
+                          if (context.mounted) {
+                            await controller.fetchItemData();
+                            controller.update();
+                          }
+                        }
+                        break;
+                      // キャンセル
+                      case CustomButton.negativeButton:
+                        break;
+                      default:
+                        break;
+                    }
+                  },
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                ),
+              ],
+            ),
+            child: ItemListTile(
+              key: Key(controller.items[index].item.id.toString()),
+              itemData: controller.items[index],
+              isList: true,
+              onTap: () async {
+                await Get.toNamed<void>(
+                  Routes.ITEM_DETAIL,
+                  arguments: controller.items[index],
+                  id: NavManager.getNavigationRouteId(Routes.HOME),
+                )!
+                    .then(
+                  (void value) async {
+                    await controller.fetchItemData();
+                    controller.update();
+                  },
+                );
+              },
+            ),
           ),
       ],
     );

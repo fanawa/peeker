@@ -88,7 +88,8 @@ class HomePageController extends GetxController {
       itemData = queryResult!
           .map((Item item) {
             // ファイル名からフルパスを生成
-            final List<String> imagePaths = item.fileNames.map((FileName fileName) {
+            final List<String> imagePaths =
+                item.fileNames.map((FileName fileName) {
               final String imagePath =
                   fileName.fileName == null || fileName.fileName == ''
                       ? ''
@@ -112,6 +113,23 @@ class HomePageController extends GetxController {
       }
     }
     return itemData;
+  }
+
+  Future<bool> deleteItem(int itemId) async {
+    Isar? isar;
+    try {
+      isar = await isarProvider();
+      isar.writeTxn(() async {
+        await isar?.items.delete(itemId);
+      });
+      return true;
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not delete item client Api: $e');
+        return false;
+      }
+    }
+    return false;
   }
 
   // displayOrder更新処理
