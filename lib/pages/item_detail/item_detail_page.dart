@@ -202,8 +202,7 @@ class ItemDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Wrap(
-                        spacing: 20, // 横の間隔
-                        // runSpacing: 10, // 縦の間隔
+                        spacing: 20, 
                         children: <Widget>[
                           ...controller.itemData.value!.item.phoneNumbers
                               .toList()

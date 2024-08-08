@@ -138,7 +138,10 @@ class HomePageController extends GetxController {
     Isar? isar;
     try {
       isar = await isarProvider();
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
+        await isar?.phoneNumbers.filter().itemIdEqualTo(itemId).deleteAll();
+        await isar?.fileNames.filter().itemIdEqualTo(itemId).deleteAll();
+
         await isar?.items.delete(itemId);
       });
       return true;

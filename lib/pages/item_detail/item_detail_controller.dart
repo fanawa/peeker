@@ -47,7 +47,6 @@ class ItemDetailPageController extends GetxController {
       await isar.phoneNumbers
           .filter()
           .itemIdEqualTo(item!.id!)
-          .sortByIsarCreatedAt()
           .findAll()
           .then((List<PhoneNumber> phoneNumbers) {
         item.phoneNumbers.addAll(phoneNumbers);
@@ -84,9 +83,13 @@ class ItemDetailPageController extends GetxController {
   }
 
   Future<bool> deleteItem(int itemId) async {
+    Isar? isar;
     try {
       isar = await isarProvider();
-      isar!.writeTxn(() async {
+      await isar.writeTxn(() async {
+        await isar?.phoneNumbers.filter().itemIdEqualTo(itemId).deleteAll();
+        await isar?.fileNames.filter().itemIdEqualTo(itemId).deleteAll();
+
         await isar?.items.delete(itemId);
       });
       return true;
