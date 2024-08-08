@@ -115,78 +115,82 @@ class ItemDetailPage extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            child: PageView.builder(
-                              controller: pageController,
-                              itemCount: controller
-                                      .itemData.value!.imagePaths.isNotEmpty
-                                  ? controller.itemData.value!.imagePaths.length
-                                  : 1,
-                              onPageChanged: (int index) {
-                                controller.setImageIndex(index);
-                              },
-                              itemBuilder: (BuildContext context, int index) {
-                                final String imagePath = controller
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              child: PageView.builder(
+                                controller: pageController,
+                                itemCount: controller
                                         .itemData.value!.imagePaths.isNotEmpty
                                     ? controller
-                                        .itemData.value!.imagePaths[index]
-                                    : 'assets/images/noimage.png';
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  child: GestureDetector(
-                                    onTap:
-                                        imagePath != 'assets/images/noimage.png'
-                                            ? () async {
-                                                await controller
-                                                    .onTapImage(imagePath);
-                                              }
-                                            : null,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: imagePath ==
+                                        .itemData.value!.imagePaths.length
+                                    : 1,
+                                onPageChanged: (int index) {
+                                  controller.setImageIndex(index);
+                                },
+                                itemBuilder: (BuildContext context, int index) {
+                                  final String imagePath = controller
+                                          .itemData.value!.imagePaths.isNotEmpty
+                                      ? controller
+                                          .itemData.value!.imagePaths[index]
+                                      : 'assets/images/noimage.png';
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 5, 5, 5),
+                                    child: GestureDetector(
+                                      onTap: imagePath !=
                                               'assets/images/noimage.png'
-                                          ? Image.asset(
-                                              'assets/images/noimage.png',
-                                              fit: BoxFit.fitHeight,
-                                            )
-                                          : Image.file(
-                                              File(imagePath),
-                                              fit: BoxFit.cover,
-                                            ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List<Widget>.generate(
-                              controller.itemData.value!.imagePaths.length,
-                              (int index) {
-                                return Obx(() {
-                                  return Container(
-                                    width: 8.0,
-                                    height: 8.0,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 2.0),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color:
-                                          controller.imageIndex.value == index
-                                              ? Colors.black
-                                              : Colors.grey,
+                                          ? () async {
+                                              await controller
+                                                  .onTapImage(imagePath);
+                                            }
+                                          : null,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: imagePath ==
+                                                'assets/images/noimage.png'
+                                            ? Image.asset(
+                                                'assets/images/noimage.png',
+                                                fit: BoxFit.fitHeight,
+                                              )
+                                            : Image.file(
+                                                File(imagePath),
+                                                fit: BoxFit.cover,
+                                              ),
+                                      ),
                                     ),
                                   );
-                                });
-                              },
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List<Widget>.generate(
+                                controller.itemData.value!.imagePaths.length,
+                                (int index) {
+                                  return Obx(() {
+                                    return Container(
+                                      width: 8.0,
+                                      height: 8.0,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 2.0),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color:
+                                            controller.imageIndex.value == index
+                                                ? Colors.black
+                                                : Colors.grey,
+                                      ),
+                                    );
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
