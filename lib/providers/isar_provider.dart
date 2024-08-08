@@ -25,6 +25,7 @@ Future<Isar> isarProvider({String? dirPath}) async {
       ItemSchema,
       PhoneNumberSchema,
       FileNameSchema,
+      SettingsSchema,
     ],
     directory: dirPath ?? defaultDir.path,
   );

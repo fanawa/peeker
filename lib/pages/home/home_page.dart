@@ -13,7 +13,6 @@ class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey();
-  final RxBool isList = true.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +46,12 @@ class HomePage extends StatelessWidget {
             leading: Obx(
               () => IconButton(
                 icon: Icon(
-                  isList.value ? Icons.list : Icons.grid_on,
+                  controller.isList.value ? Icons.list : Icons.grid_on,
                   size: 30,
                 ),
                 onPressed: () {
-                  isList.value = !isList.value;
+                  controller.isList.value = !controller.isList.value;
+                  controller.saveSettings(); // 状態を保存
                 },
               ),
             ),
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
                 controller.update();
               },
               child: Obx(
-                () => isList.value
+                () => controller.isList.value
                     ? _buildListView(context, controller)
                     : _buildGridView(context, controller),
               ),
@@ -131,7 +131,6 @@ class HomePage extends StatelessWidget {
                     }
                     switch (result) {
                       case CustomButton.positiveButton:
-                        // OK
                         final bool result = await controller
                             .deleteItem(controller.items[index].item.id!);
                         if (result != null) {
@@ -141,7 +140,6 @@ class HomePage extends StatelessWidget {
                           }
                         }
                         break;
-                      // キャンセル
                       case CustomButton.negativeButton:
                         break;
                       default:
@@ -200,10 +198,8 @@ class HomePage extends StatelessWidget {
               mainAxisSpacing: 2,
             ),
             onReorder: (int oldIndex, int newIndex) async {
-              // 追加ボタンのインデックスを確認
               if (oldIndex == controller.items.length ||
                   newIndex == controller.items.length) {
-                // 追加ボタンが並び替えの対象となる場合は何もしない
                 return;
               }
               final ItemData item = controller.items.removeAt(oldIndex);
@@ -217,7 +213,6 @@ class HomePage extends StatelessWidget {
             itemCount: controller.items.length,
             itemBuilder: (BuildContext context, int index) {
               debugPrint('controller.items.length: ${controller.items.length}');
-              // 登録済みカード
               final ItemData row = controller.items[index];
               return ItemListTile(
                 key: Key(row.item.id.toString()),

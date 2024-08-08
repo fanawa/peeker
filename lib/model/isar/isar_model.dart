@@ -3,6 +3,16 @@ import 'package:isar/isar.dart';
 
 part 'isar_model.g.dart';
 
+
+/* --------------------------
+         Setting
+   -------------------------- */
+@collection
+class Settings {
+  Id id = Isar.autoIncrement; // 自動インクリメントのID
+  bool isList = true; // デフォルトはリスト表示
+}
+
 /* --------------------------
          Item
    -------------------------- */

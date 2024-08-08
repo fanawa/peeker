@@ -17,12 +17,31 @@ class HomePageController extends GetxController {
   RxList<ItemData> items = RxList<ItemData>();
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
+  RxBool isList = true.obs;
 
   @override
   Future<void> onInit() async {
     super.onInit();
     await fetchItemData();
+    await loadSettings();
     update();
+  }
+
+  Future<void> loadSettings() async {
+    final Isar isar = await isarProvider();
+    final settings = await isar.settings.where().findFirst();
+    if (settings != null) {
+      isList.value = settings.isList;
+    }
+  }
+
+  Future<void> saveSettings() async {
+    final Isar isar = await isarProvider();
+    final settings = await isar.settings.where().findFirst() ?? Settings();
+    settings.isList = isList.value;
+    await isar.writeTxn(() async {
+      await isar.settings.put(settings);
+    });
   }
 
   /// アプリ内フォルダに画像を保管
