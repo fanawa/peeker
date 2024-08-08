@@ -1,19 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
 import 'package:idz/pages/home/models.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
 import 'package:idz/routes/app_pages.dart';
-import 'package:idz/utils/environment_variables.dart';
-import 'package:idz/utils/image_selector.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:isar/isar.dart';
-import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,6 +21,7 @@ class ItemDetailPageController extends GetxController {
   Rxn<ItemData> itemData = Rxn<ItemData>();
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
+  RxInt imageIndex = 0.obs;
 
   @override
   void onInit() {
@@ -38,21 +34,45 @@ class ItemDetailPageController extends GetxController {
     update();
   }
 
+  void setImageIndex(int index) {
+    imageIndex.value = index;
+  }
+
   /// Item データ取得
   Future<ItemData?> fetchItemData(int itemId) async {
     Isar? isar;
     try {
       isar = await isarProvider();
       final Item? item = await isar.items.get(itemId);
+      await isar.phoneNumbers
+          .filter()
+          .itemIdEqualTo(item!.id!)
+          .findAll()
+          .then((List<PhoneNumber> phoneNumbers) {
+        item.phoneNumbers.addAll(phoneNumbers);
+      });
+
+      // 各Itemについて、リンクされたfileNamesを明示的に読み込む
+      await isar.fileNames
+          .filter()
+          .itemIdEqualTo(item.id!)
+          .findAll()
+          .then((List<FileName> fileNames) {
+        item.fileNames.addAll(fileNames);
+      });
 
       final String nowDocumentPath =
           (await getApplicationDocumentsDirectory()).path;
 
-      final String imagePath = item!.fileName == null || item.fileName == ''
-          ? ''
-          : File(p.join(nowDocumentPath, item.fileName)).path;
-      debugPrint('imagePath: $imagePath');
-      return ItemData(item: item, imagePath: imagePath);
+      final List<String> imagePaths = item.fileNames.map((FileName fileName) {
+        final String imagePath = p.join(nowDocumentPath, fileName.fileName);
+        if (!File(imagePath).existsSync()) {
+          debugPrint('ファイルが存在しません: $imagePath');
+        }
+        return imagePath;
+      }).toList();
+
+      return ItemData(item: item, imagePaths: imagePaths);
     } on Exception catch (e) {
       if (kDebugMode) {
         debugPrint('Could not fetch item client Api: $e');
@@ -63,9 +83,13 @@ class ItemDetailPageController extends GetxController {
   }
 
   Future<bool> deleteItem(int itemId) async {
+    Isar? isar;
     try {
       isar = await isarProvider();
-      isar!.writeTxn(() async {
+      await isar.writeTxn(() async {
+        await isar?.phoneNumbers.filter().itemIdEqualTo(itemId).deleteAll();
+        await isar?.fileNames.filter().itemIdEqualTo(itemId).deleteAll();
+
         await isar?.items.delete(itemId);
       });
       return true;
@@ -107,52 +131,6 @@ class ItemDetailPageController extends GetxController {
       arguments: uri,
     );
     topPageController.isVisibleBottomNav.value = true;
-  }
-
-  /// 画像選択
-  Future<void> selectPicture(BuildContext context) async {
-    {
-      selectedPicture.value = null;
-
-      final XFile? selectedFile =
-          await ImageSelector.showBottomSheetMenu(context);
-      if (selectedFile == null) {
-        return;
-      }
-
-      if (await selectedFile.length() > 10000000) {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '画像サイズが大き過ぎます。\n10MB以下の画像を選択してください。',
-          );
-        }
-        return;
-      }
-      final List<int> headerBytes = await selectedFile.openRead(0, 12).first;
-      final String? mimeType = lookupMimeType(
-        p.basenameWithoutExtension(selectedFile.path),
-        headerBytes: headerBytes,
-      );
-      if (EnvironmentVariables.allowedMimeType.contains(mimeType)) {
-        selectedPicture.value = selectedFile;
-        debugPrint(
-            ' selectedPicture.value.path: ${selectedPicture.value!.path}');
-      } else {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '選択されたファイルは画像ではありません。\n画像ファイルを選択してください。',
-          );
-        } else {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'Error',
-            text:
-                'The selected file is not an image. \nPlease select an image file.',
-          );
-        }
-      }
-    }
   }
 
   /// アプリ内フォルダに画像を保管

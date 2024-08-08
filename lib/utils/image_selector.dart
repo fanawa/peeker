@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 
 /// 画像選択時のBottomSheet
 class ImageSelector {
-  static Future<XFile?> showBottomSheetMenu(BuildContext context) {
+  static Future<List<XFile>?> showBottomSheetMenu(BuildContext context) {
     return showModalBottomSheet(
       useRootNavigator: true,
       context: context,
@@ -39,7 +39,7 @@ class ImageSelector {
                             Navigator.of(
                               context,
                               rootNavigator: true,
-                            ).pop(photo);
+                            ).pop(<XFile>[if (photo != null) photo]);
                           }
                         },
                       ),
@@ -51,15 +51,16 @@ class ImageSelector {
                         ),
                         onTap: () async {
                           final ImagePicker picker = ImagePicker();
-                          final XFile? image = await picker.pickImage(
-                              imageQuality: 70,
-                              maxWidth: 500,
-                              source: ImageSource.gallery);
+                          final List<XFile> images =
+                              await picker.pickMultiImage(
+                            imageQuality: 70,
+                            maxWidth: 500,
+                          );
                           if (context.mounted) {
                             Navigator.of(
                               context,
                               rootNavigator: true,
-                            ).pop(image);
+                            ).pop(images);
                           }
                         },
                       ),

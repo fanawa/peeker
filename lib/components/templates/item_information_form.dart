@@ -10,30 +10,35 @@ class ItemInformationForm extends StatelessWidget {
   ItemInformationForm({
     Key? key,
     required this.fbKey,
-    this.previewPicturePath,
+    this.previewPicturePaths,
     required this.onTapCancel,
     required this.onTapAddImage,
+    required this.onTapRemoveImage,
     this.initialValueName,
+    this.initialValueContactName,
     this.initialValuePhoneNumber,
     this.initialValueUrl,
     this.initialValueDescription,
-    this.onChangedName,
-    this.onChangedPhoneNumber,
-    this.onChangedUrl,
-    this.onChangedDescription,
+    this.onChanged,
+    this.contactFields,
+    this.onPressRemove,
+    this.onPressAdd,
   }) : super(key: key);
   final GlobalKey<FormBuilderState> fbKey;
-  final String? previewPicturePath;
+  final List<String>? previewPicturePaths;
   final VoidCallback onTapCancel;
   final VoidCallback onTapAddImage;
+  final void Function(int) onTapRemoveImage;
   final String? initialValueName;
+  final String? initialValueContactName;
   final String? initialValuePhoneNumber;
   final String? initialValueUrl;
   final String? initialValueDescription;
-  final void Function(String?)? onChangedName;
-  final void Function(String?)? onChangedPhoneNumber;
-  final void Function(String?)? onChangedUrl;
-  final void Function(String?)? onChangedDescription;
+  final void Function(String?)? onChanged;
+
+  final List<Map<String, dynamic>>? contactFields;
+  final void Function(int)? onPressRemove;
+  final void Function()? onPressAdd;
 
   final RxBool isLoading = RxBool(false);
 
@@ -45,24 +50,73 @@ class ItemInformationForm extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 150,
-                  maxWidth: 150,
-                ),
-                child: previewPicturePath == null || previewPicturePath == ''
-                    ? Container(color: Colors.grey[100])
-                    : Image.file(
-                        File(previewPicturePath!),
-                        fit: BoxFit.fill,
-                      ),
-              ),
-              if (isLoading.value)
-                const Positioned.fill(
-                  child: Center(
-                    child: CustomCircularProgressIndicator(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
                   ),
+                  itemCount: previewPicturePaths?.length ?? 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    final String? path = previewPicturePaths?[index];
+                    return GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: const Text(
+                                'この画像を削除しますか？',
+                                textAlign: TextAlign.center,
+                              ),
+                              actions: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('キャンセル'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        onTapRemoveImage(index);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('削除'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: path == null || path == ''
+                          ? Container(color: Colors.grey[100])
+                          : Image.file(
+                              File(path),
+                              fit: BoxFit.fill,
+                            ),
+                    );
+                  },
                 ),
+              ),
+              Obx(
+                () => isLoading.value
+                    ? const Positioned.fill(
+                        child: Center(
+                          child: CustomCircularProgressIndicator(),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
               const SizedBox(height: 6),
               FilledButton.tonalIcon(
                 style: ButtonStyle(
@@ -102,7 +156,7 @@ class ItemInformationForm extends StatelessWidget {
                             textAlignVertical: TextAlignVertical.center,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.multiline,
-                            onChanged: onChangedName,
+                            onChanged: onChanged,
                             validator: FormBuilderValidators.compose(
                               <FormFieldValidator<String?>>[
                                 FormBuilderValidators.required(
@@ -126,47 +180,49 @@ class ItemInformationForm extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Container(
-                          alignment: Alignment.centerLeft,
+                        Padding(
                           padding: const EdgeInsets.only(left: 10),
-                          child: const Text(
-                            '電話番号',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        FormBuilderTextField(
-                          name: 'phoneNumber',
-                          initialValue: initialValuePhoneNumber ?? '',
-                          textAlign: TextAlign.start,
-                          textAlignVertical: TextAlignVertical.center,
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.phone,
-                          onChanged: onChangedPhoneNumber,
-                          validator: FormBuilderValidators.compose(
-                            <FormFieldValidator<String?>>[
-                              FormBuilderValidators.maxLength(20),
-                              FormBuilderValidators.integer(),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                '連絡先',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              Visibility(
+                                visible: contactFields!.isNotEmpty &&
+                                    (contactFields!.last['contactName'] != '' ||
+                                        contactFields!.last['phoneNumber'] !=
+                                            ''),
+                                maintainSize: true,
+                                maintainAnimation: true,
+                                maintainState: true,
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.add_circle_outline_sharp,
+                                      size: 17,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: onPressAdd,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          autofocus: true,
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            focusedBorder: InputBorder.none,
-                            filled: true,
-                            errorMaxLines: 3,
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
                         ),
+                        for (int i = 0;
+                            i < contactFields!.length;
+                            i++) ...<Widget>[
+                          _buildContactField(i, context),
+                          if (i < contactFields!.length - 1)
+                            const SizedBox(height: 10),
+                        ],
                         const SizedBox(height: 20),
                         Container(
                           alignment: Alignment.centerLeft,
@@ -187,7 +243,7 @@ class ItemInformationForm extends StatelessWidget {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.url,
-                          onChanged: onChangedUrl,
+                          onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.url(),
@@ -223,13 +279,13 @@ class ItemInformationForm extends StatelessWidget {
                         FormBuilderTextField(
                           name: 'description',
                           initialValue: initialValueDescription ?? '',
-                          minLines: 3,
+                          minLines: 6,
                           maxLines: null,
                           textAlign: TextAlign.start,
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.newline,
                           keyboardType: TextInputType.multiline,
-                          onChanged: onChangedDescription,
+                          onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
                               FormBuilderValidators.maxLength(200)
@@ -255,6 +311,139 @@ class ItemInformationForm extends StatelessWidget {
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactField(int index, BuildContext context) {
+    final bool isFirst = index == 0;
+    return Column(
+      children: <Widget>[
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  children: <Widget>[
+                    FormBuilderTextField(
+                      name: 'contactName_$index',
+                      initialValue:
+                          contactFields![index]['contactName'] == null ||
+                                  contactFields![index]['contactName'] == ''
+                              ? ''
+                              : contactFields![index]['contactName'].toString(),
+                      textAlign: TextAlign.start,
+                      textAlignVertical: TextAlignVertical.center,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.multiline,
+                      onChanged: (String? value) {
+                        contactFields![index]['contactName'] = value;
+                        onChanged!.call(value);
+                      },
+                      validator: FormBuilderValidators.compose(
+                        <FormFieldValidator<String?>>[
+                          FormBuilderValidators.maxLength(20),
+                        ],
+                      ),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        focusedBorder: InputBorder.none,
+                        filled: true,
+                        errorMaxLines: 3,
+                        border: InputBorder.none,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(
+                            left: 10,
+                            right: 20,
+                          ),
+                          child: Text(
+                            'ラベル',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                      ),
+                    ),
+                    FormBuilderTextField(
+                      name: 'phoneNumber_$index',
+                      initialValue:
+                          contactFields![index]['phoneNumber'].toString(),
+                      textAlign: TextAlign.start,
+                      textAlignVertical: TextAlignVertical.center,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.phone,
+                      onChanged: (String? value) {
+                        contactFields![index]['phoneNumber'] = value;
+                        onChanged!.call(value);
+                      },
+                      validator: FormBuilderValidators.compose(
+                        <FormFieldValidator<String?>>[
+                          FormBuilderValidators.maxLength(20),
+                        ],
+                      ),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        focusedBorder: InputBorder.none,
+                        filled: true,
+                        errorMaxLines: 3,
+                        border: InputBorder.none,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                          ),
+                          child: Text(
+                            '電話番号',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (!isFirst || contactFields!.length > 1)
+                Container(
+                  width: 50,
+                  color: Colors.grey[100],
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+                    onPressed: () => onPressRemove!(index),
+                  ),
+                ),
             ],
           ),
         ),

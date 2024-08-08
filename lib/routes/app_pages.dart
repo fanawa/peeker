@@ -36,7 +36,7 @@ class AppPages {
             ),
             GetPage<dynamic>(
                 name: _Paths.ITEM_DETAIL,
-                page: () => ItemDetailPage(),
+                page: () => const ItemDetailPage(),
                 binding: ItemDetailPageBinding(),
                 children: <GetPage<dynamic>>[
                   GetPage<dynamic>(

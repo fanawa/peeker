@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
@@ -27,8 +28,7 @@ class CreateItemPage extends StatelessWidget {
               ),
               onPressed: () async {
                 final bool isChanged = _fbKey.currentState!.isDirty ||
-                    controller.previewPicture.value != null;
-                // 初期値と比較して変更があるか確認
+                    controller.selectedPictures.isNotEmpty;
                 if (isChanged) {
                   final CustomButton result =
                       await FlutterPlatformAlert.showCustomAlert(
@@ -42,20 +42,15 @@ class CreateItemPage extends StatelessWidget {
                   }
                   switch (result) {
                     case CustomButton.positiveButton:
-                      // OK
-                      // Navigator.of(context, rootNavigator: true).pop();
                       Navigator.of(context).pop<bool>(false);
-                      controller.previewPicture.value = null;
+                      controller.selectedPictures.clear();
                       break;
-                    // キャンセル
                     case CustomButton.negativeButton:
-                      Navigator.of(context).pop();
                       break;
                     default:
                       break;
                   }
                 } else {
-                  // 変更がなければ直接ダイアログを閉じる
                   Navigator.of(context).pop();
                 }
               },
@@ -65,106 +60,89 @@ class CreateItemPage extends StatelessWidget {
                 onPressed: () async {
                   if (_fbKey.currentState!.saveAndValidate()) {
                     final String name =
-                        _fbKey.currentState!.value['name'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['name'].toString();
-                    final String phoneNumber =
-                        _fbKey.currentState!.value['phoneNumber'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['phoneNumber']
-                                .toString();
-                    final String url = _fbKey.currentState!.value['url'] == null
-                        ? ''
-                        : _fbKey.currentState!.value['url'].toString();
+                        _fbKey.currentState!.value['name']?.toString() ?? '';
+                    final String url =
+                        _fbKey.currentState!.value['url']?.toString() ?? '';
                     final String description =
-                        _fbKey.currentState!.value['description'] == null
-                            ? ''
-                            : _fbKey.currentState!.value['description']
-                                .toString();
+                        _fbKey.currentState!.value['description']?.toString() ??
+                            '';
 
-                    final String? fileName =
-                        controller.previewPicture.value == null
-                            ? ''
-                            : await controller.saveImageToFileSystem(
-                                controller.previewPicture.value!);
+                    final List<Map<String, dynamic>> extractedContacts =
+                        <Map<String, dynamic>>[];
+                    for (int index = 0;
+                        index < (controller.contactFields?.length ?? 0);
+                        index++) {
+                      final String contactName = _fbKey
+                              .currentState!.value['contactName_$index']
+                              ?.toString() ??
+                          '';
+                      final String phoneNumber = _fbKey
+                              .currentState!.value['phoneNumber_$index']
+                              ?.toString() ??
+                          '';
+                      if (contactName.isNotEmpty || phoneNumber.isNotEmpty) {
+                        extractedContacts.add(<String, String>{
+                          'contactName': contactName,
+                          'phoneNumber': phoneNumber,
+                        });
+                      }
+                    }
+                    controller.contactFields = extractedContacts;
 
-                    final bool result = await controller.createNewItem(
+                    final List<XFile> selectedPictures =
+                        controller.getSelectedPictures();
+                    final List<String> fileNames = await controller
+                        .saveImagesToFileSystem(selectedPictures);
+
+                    final bool result =
+                        await controller.createItemWithPhoneNumbers(
                       name,
-                      phoneNumber,
                       url,
                       description,
-                      fileName,
+                      fileNames,
                     );
-                    if (result != null) {
-                      controller.previewPicture.value = null;
+                    if (result) {
+                      controller.selectedPictures.clear();
                       if (context.mounted) {
-                        // Navigator.of(context).pop<bool>(true);
-                        // Get.back(result: true, canPop: true);
                         Navigator.of(context).pop(true);
                       }
                     }
                   }
                 },
-                child: const Text(
-                  '完了',
-                ),
+                child: const Text('完了'),
               ),
             ],
           ),
           body: SafeArea(
             child: ItemInformationForm(
               fbKey: _fbKey,
-              previewPicturePath: controller.previewPicture.value?.path,
-              onTapCancel: () async {
-                final bool isChanged = _fbKey.currentState!.isDirty ||
-                    controller.previewPicture.value != null;
-                // 初期値と比較して変更があるか確認
-                if (isChanged) {
-                  final CustomButton result =
-                      await FlutterPlatformAlert.showCustomAlert(
-                    windowTitle: '変更内容を破棄しますか？',
-                    text: '',
-                    positiveButtonTitle: 'OK',
-                    negativeButtonTitle: 'キャンセル',
-                  );
-                  if (!context.mounted) {
-                    return;
-                  }
-                  switch (result) {
-                    case CustomButton.positiveButton:
-                      // OK
-                      Navigator.of(context, rootNavigator: true).pop();
-                      controller.previewPicture.value = null;
-                      break;
-                    // キャンセル
-                    case CustomButton.negativeButton:
-                      Navigator.of(context).pop();
-                      break;
-                    default:
-                      break;
-                  }
-                } else {
-                  // 変更がなければ直接ダイアログを閉じる
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).pop();
-                  controller.selectedPicture.value = null;
-                }
+              previewPicturePaths: controller.selectedPictures
+                  .map((XFile? picture) => picture?.path ?? '')
+                  .where((String path) => path.isNotEmpty)
+                  .toList(),
+              contactFields:
+                  controller.contactFields ?? <Map<String, dynamic>>[],
+              onPressAdd: () {
+                controller.addContactField();
+              },
+              onPressRemove: (int index) {
+                controller.removeContactField(index, _fbKey);
+              },
+              onChanged: (_) {
+                controller.update();
               },
               onTapAddImage: () async {
-                // 画像選択 or カメラ起動
-                await controller.selectPicture(context);
+                await controller.selectPictures(context);
                 if (!context.mounted) {
                   return;
                 }
-                if (controller.selectedPicture.value != null) {
-                  controller.previewPicture.value =
-                      controller.selectedPicture.value;
-                  controller.selectedPicture.value = null;
-                  controller.update();
-                }
+                controller.update();
               },
+              onTapRemoveImage: (int index) {
+                controller.removePictureAtIndex(index); // 修正
+                controller.update();
+              },
+              onTapCancel: () {},
             ),
           ),
         );

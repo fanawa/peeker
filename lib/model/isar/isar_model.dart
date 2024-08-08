@@ -3,6 +3,16 @@ import 'package:isar/isar.dart';
 
 part 'isar_model.g.dart';
 
+
+/* --------------------------
+         Setting
+   -------------------------- */
+@collection
+class Settings {
+  Id id = Isar.autoIncrement; // 自動インクリメントのID
+  bool isList = true; // デフォルトはリスト表示
+}
+
 /* --------------------------
          Item
    -------------------------- */
@@ -35,10 +45,14 @@ class Item implements Base {
   @override
   DateTime? isarUpdatedAt;
 
+  final IsarLinks<PhoneNumber> phoneNumbers = IsarLinks<PhoneNumber>();
+  final IsarLinks<FileName> fileNames = IsarLinks<FileName>();
+
   Item copyWith({
     Id? id,
     String? name,
     String? phoneNumber,
+    IsarLinks<PhoneNumber>? phoneNumbers,
     String? url,
     String? description,
     String? fileName,
@@ -60,4 +74,78 @@ class Item implements Base {
       isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,
     );
   }
+}
+
+@collection
+class PhoneNumber implements Base {
+  PhoneNumber({
+    this.id,
+    required this.number,
+    this.contactName,
+    required this.itemId,
+    this.isarUpdatedAt,
+    this.isarCreatedAt,
+    this.isarDeletedAt,
+  });
+
+  @override
+  Id? id;
+  String number;
+  String? contactName;
+  int itemId;
+  @override
+  DateTime? isarCreatedAt;
+  @override
+  DateTime? isarDeletedAt;
+  @override
+  DateTime? isarUpdatedAt;
+
+  @Backlink(to: 'phoneNumbers')
+  final IsarLink<Item> item = IsarLink<Item>();
+
+  PhoneNumber copyWith({
+    Id? id,
+    String? number,
+    String? contactName,
+    int? itemId,
+    DateTime? isarCreatedAt,
+    DateTime? isarDeletedAt,
+    DateTime? isarUpdatedAt,
+  }) {
+    return PhoneNumber(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      contactName: contactName ?? this.contactName,
+      itemId: itemId ?? this.itemId,
+      isarCreatedAt: isarCreatedAt ?? this.isarCreatedAt,
+      isarDeletedAt: isarDeletedAt ?? this.isarDeletedAt,
+      isarUpdatedAt: isarUpdatedAt ?? this.isarUpdatedAt,
+    );
+  }
+}
+
+@collection
+class FileName implements Base {
+  FileName({
+    this.id,
+    required this.fileName,
+    required this.itemId,
+    this.isarUpdatedAt,
+    this.isarCreatedAt,
+    this.isarDeletedAt,
+  });
+
+  @override
+  Id? id;
+  String fileName;
+  int itemId;
+  @override
+  DateTime? isarCreatedAt;
+  @override
+  DateTime? isarDeletedAt;
+  @override
+  DateTime? isarUpdatedAt;
+
+  @Backlink(to: 'fileNames')
+  final IsarLink<Item> item = IsarLink<Item>();
 }

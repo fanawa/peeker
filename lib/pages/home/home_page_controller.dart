@@ -1,18 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
 import 'package:idz/model/isar/isar_model.dart';
 import 'package:idz/pages/home/models.dart';
 import 'package:idz/pages/top/top_page_controller.dart';
 import 'package:idz/providers/isar_provider.dart';
-import 'package:idz/utils/environment_variables.dart';
-import 'package:idz/utils/image_selector.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:isar/isar.dart';
-import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -22,57 +17,31 @@ class HomePageController extends GetxController {
   RxList<ItemData> items = RxList<ItemData>();
   Rxn<XFile?> selectedPicture = Rxn<XFile?>();
   Rxn<XFile?> previewPicture = Rxn<XFile?>();
+  RxBool isList = true.obs;
 
   @override
   Future<void> onInit() async {
     super.onInit();
     await fetchItemData();
+    await loadSettings();
     update();
   }
 
-  /// 画像選択
-  Future<void> selectPicture(BuildContext context) async {
-    {
-      selectedPicture.value = null;
-
-      final XFile? selectedFile =
-          await ImageSelector.showBottomSheetMenu(context);
-      if (selectedFile == null) {
-        return;
-      }
-
-      if (await selectedFile.length() > 10000000) {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '画像サイズが大き過ぎます。\n10MB以下の画像を選択してください。',
-          );
-        }
-        return;
-      }
-      final List<int> headerBytes = await selectedFile.openRead(0, 12).first;
-      final String? mimeType = lookupMimeType(
-        p.basenameWithoutExtension(selectedFile.path),
-        headerBytes: headerBytes,
-      );
-      if (EnvironmentVariables.allowedMimeType.contains(mimeType)) {
-        selectedPicture.value = selectedFile;
-        update();
-      } else {
-        if (context.mounted) {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'エラー',
-            text: '選択されたファイルは画像ではありません。\n画像ファイルを選択してください。',
-          );
-        } else {
-          await FlutterPlatformAlert.showAlert(
-            windowTitle: 'Error',
-            text:
-                'The selected file is not an image. \nPlease select an image file.',
-          );
-        }
-      }
+  Future<void> loadSettings() async {
+    final Isar isar = await isarProvider();
+    final settings = await isar.settings.where().findFirst();
+    if (settings != null) {
+      isList.value = settings.isList;
     }
+  }
+
+  Future<void> saveSettings() async {
+    final Isar isar = await isarProvider();
+    final settings = await isar.settings.where().findFirst() ?? Settings();
+    settings.isList = isList.value;
+    await isar.writeTxn(() async {
+      await isar.settings.put(settings);
+    });
   }
 
   /// アプリ内フォルダに画像を保管
@@ -111,21 +80,46 @@ class HomePageController extends GetxController {
         },
       );
 
+      if (queryResult != null) {
+        for (final Item item in queryResult) {
+          // 各Itemについて、リンクされたphoneNumbersを明示的に読み込む
+          await isar.phoneNumbers
+              .filter()
+              .itemIdEqualTo(item.id!)
+              .findAll()
+              .then((List<PhoneNumber> phoneNumbers) {
+            item.phoneNumbers.addAll(phoneNumbers);
+          });
+
+          // 各Itemについて、リンクされたfileNamesを明示的に読み込む
+          await isar.fileNames
+              .filter()
+              .itemIdEqualTo(item.id!)
+              .findAll()
+              .then((List<FileName> fileNames) {
+            item.fileNames.addAll(fileNames);
+          });
+        }
+      }
+
       final String storePath = (await getApplicationDocumentsDirectory()).path;
 
       itemData = queryResult!
           .map((Item item) {
             // ファイル名からフルパスを生成
-            final String imagePath =
-                item.fileName == null || item.fileName == ''
-                    ? ''
-                    : p.join(storePath, item.fileName);
-            if (!File(imagePath).existsSync()) {
-              debugPrint('ファイルが存在しません: $imagePath');
-              return null;
-            }
-            debugPrint('imagePath: $imagePath');
-            return ItemData(item: item, imagePath: imagePath);
+            final List<String> imagePaths =
+                item.fileNames.map((FileName fileName) {
+              final String imagePath =
+                  fileName.fileName == null || fileName.fileName == ''
+                      ? ''
+                      : p.join(storePath, fileName.fileName);
+              if (!File(imagePath).existsSync()) {
+                debugPrint('ファイルが存在しません: $imagePath');
+              }
+              return imagePath;
+            }).toList();
+
+            return ItemData(item: item, imagePaths: imagePaths);
           })
           .where((ItemData? item) => item != null)
           .cast<ItemData>()
@@ -140,50 +134,24 @@ class HomePageController extends GetxController {
     return itemData;
   }
 
-  // Item 追加
-  Future<bool> createNewItem(
-    String name,
-    String? phoneNumber,
-    String? url,
-    String? description,
-    String? fileName,
-  ) async {
-    final Isar isar = await isarProvider();
-    final int maxOrder = await _getMaxDisplayOrder(isar);
-    final Item input = Item()
-      ..name = name
-      ..phoneNumber = phoneNumber!
-      ..url = url ?? ''
-      ..description = description ?? ''
-      ..fileName = fileName ?? ''
-      ..displayOrder = maxOrder
-      ..isarCreatedAt = DateTime.now()
-      ..isarUpdatedAt = DateTime.now();
+  Future<bool> deleteItem(int itemId) async {
+    Isar? isar;
     try {
-      await isar.writeTxn(
-        () async {
-          await isar.items.put(input);
-        },
-      );
+      isar = await isarProvider();
+      await isar.writeTxn(() async {
+        await isar?.phoneNumbers.filter().itemIdEqualTo(itemId).deleteAll();
+        await isar?.fileNames.filter().itemIdEqualTo(itemId).deleteAll();
+
+        await isar?.items.delete(itemId);
+      });
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       if (kDebugMode) {
-        debugPrint('Could not create Item client Api: $e');
+        debugPrint('Could not delete item client Api: $e');
+        return false;
       }
-      return false;
     }
-  }
-
-// displayOrderの最大値取得
-  Future<int> _getMaxDisplayOrder(Isar isar) async {
-    final List<Item?> items =
-        await isar.items.where().sortByDisplayOrderDesc().limit(1).findAll();
-
-    if (items.isNotEmpty) {
-      return items.first!.displayOrder!;
-    } else {
-      return 0; // デフォルト値、データが存在しない場合
-    }
+    return false;
   }
 
   // displayOrder更新処理

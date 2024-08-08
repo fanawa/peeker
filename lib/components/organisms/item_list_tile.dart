@@ -8,62 +8,117 @@ class ItemListTile extends StatelessWidget {
     Key? key,
     required this.itemData,
     this.onTap,
+    this.isList = true,
   }) : super(key: key);
 
   final ItemData itemData;
   final VoidCallback? onTap;
+  final bool isList;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 30),
-              SizedBox(
-                height: 100, // TODO(a): マジックナンバー ITEM_HEIGHTに変更する
-                child: PageView.builder(
-                  itemCount: 1, // TODO(a): listにしたい
-                  controller: PageController(
-                    viewportFraction: 0.8,
-                  ),
-                  itemBuilder: (
-                    BuildContext context,
-                    int horizontalIndex,
-                  ) {
-                    return Container(
-                      height: 100,
-                      width: 120,
-                      foregroundDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: itemData.item.fileName == null ||
-                              itemData.item.fileName == ''
-                          ? Image.asset(
-                              'assets/images/noimage.png',
-                              fit: BoxFit.fitHeight,
-                            )
-                          : Image.file(
-                              File(itemData.imagePath!),
-                              fit: BoxFit.fitHeight,
-                            ),
-                    );
-                  },
+        child: isList ? _buildListTile(context) : _buildGridTile(context),
+      ),
+    );
+  }
+
+  Widget _buildListTile(BuildContext context) {
+    return ListTile(
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      leading: itemData.imagePaths.isEmpty
+          ? SizedBox(
+              width: 50,
+              height: 50,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'assets/images/noimage.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 8),
-              SizedBox(
-                child: Text(
-                  itemData.item.name == 'null' ? '' : itemData.item.name!,
+            )
+          : SizedBox(
+              width: 50,
+              height: 50,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  File(itemData.imagePaths.first),
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
+            ),
+      title: Text(
+        itemData.item.name == 'null' ? '' : itemData.item.name!,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
         ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildGridTile(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget>[
+          const SizedBox(height: 16),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.12,
+            child: PageView.builder(
+              itemCount:
+                  itemData.imagePaths.isEmpty ? 1 : itemData.imagePaths.length,
+              controller: PageController(
+                viewportFraction: 0.8,
+              ),
+              itemBuilder: (
+                BuildContext context,
+                int horizontalIndex,
+              ) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: itemData.imagePaths.isEmpty
+                        ? SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.08,
+                            child: Image.asset(
+                              'assets/images/noimage.png',
+                            ),
+                          )
+                        : SizedBox(
+                            child: Image.file(
+                              File(itemData.imagePaths[horizontalIndex]),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            height: MediaQuery.of(context).size.height * 0.05,
+            child: Text(
+              itemData.item.name == 'null' ? '' : itemData.item.name!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 3),
+        ],
       ),
     );
   }
