@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:idz/pages/auth/auth_controller.dart';
+import 'package:peeker/pages/auth/auth_controller.dart';
 
 class HomePageBinding extends Bindings {
   @override

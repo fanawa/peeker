@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/pages/auth/auth_controller.dart';
-import 'package:idz/routes/app_pages.dart';
+import 'package:peeker/pages/auth/auth_controller.dart';
+import 'package:peeker/routes/app_pages.dart';
 
 class AuthPage extends StatelessWidget {
   AuthPage({Key? key}) : super(key: key);

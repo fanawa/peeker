@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:idz/utils/platform_information.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:peeker/utils/platform_information.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {

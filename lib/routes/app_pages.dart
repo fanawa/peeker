@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:peeker/pages/auth/auth_page.dart';
 import 'package:peeker/pages/create_item/create_item_binding.dart';
 import 'package:peeker/pages/create_item/create_item_page.dart';
 import 'package:peeker/pages/edit_item/edit_item_binding.dart';
