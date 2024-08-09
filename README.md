@@ -1,16 +1,4 @@
 # peeker
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 診察券番号や、交通事故時の保険会社の連絡先など、必要な情報を画像とともに登録しておけばスムースに確認できます。
+- アプリ内データベースを使用するので、情報が外部漏洩するリスクが低いです。
