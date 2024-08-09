@@ -6,12 +6,11 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<Isar> isarProvider({String? dirPath}) async {
-  // TODO(a): 生体認証時時にdeviceIdを登録
   const FlutterSecureStorage storage = FlutterSecureStorage();
   final String? deviceId = await storage.read(key: 'deviceId');
+  final String instanceName = 'IDz_$deviceId';
 
-  // TODO(a): deiceIdもデータベース名に追加する  ex: 'IDz_$deviceId'
-  Isar? isar = Isar.getInstance('IDz_');
+  Isar? isar = Isar.getInstance(instanceName);
 
   if (isar != null) {
     return isar;

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:idz/pages/auth/auth_page.dart';
 import 'package:idz/pages/create_item/create_item_binding.dart';
 import 'package:idz/pages/create_item/create_item_page.dart';
 import 'package:idz/pages/edit_item/edit_item_binding.dart';
@@ -58,6 +59,10 @@ class AppPages {
       name: _Paths.PHOTO_VIEW_PAGE,
       page: () => const PhotoViewPage(),
       binding: PhotoViewPageBinding(),
+    ),
+    GetPage<dynamic>(
+      name: _Paths.AUTH,
+      page: () => AuthPage(),
     ),
   ];
 }
