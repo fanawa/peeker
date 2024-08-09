@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,7 +11,8 @@ Future<Isar> isarProvider({String? dirPath}) async {
   final String? deviceId = await storage.read(key: 'deviceId');
   final String instanceName = 'PEEKER_$deviceId';
 
-  Isar? isar = Isar.getInstance('PEEKER_');
+  debugPrint('deviceId: $deviceId');
+  Isar? isar = Isar.getInstance(instanceName);
 
   if (isar != null) {
     return isar;
