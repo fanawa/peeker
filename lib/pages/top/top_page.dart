@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/pages/root/root_page.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
+import 'package:peeker/pages/root/root_page.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
 
 class TopPage extends GetView<TopPageController> {
   TopPage({Key? key}) : super(key: key);

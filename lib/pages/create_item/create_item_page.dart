@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/templates/item_information_form.dart';
-import 'package:idz/pages/create_item/create_item_controller.dart';
+import 'package:peeker/components/templates/item_information_form.dart';
+import 'package:peeker/pages/create_item/create_item_controller.dart';
 
 class CreateItemPage extends StatelessWidget {
   CreateItemPage({super.key});

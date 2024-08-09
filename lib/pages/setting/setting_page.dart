@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:idz/pages/setting/setting_page_controller.dart';
+import 'package:peeker/pages/setting/setting_page_controller.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});

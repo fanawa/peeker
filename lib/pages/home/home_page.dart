@@ -3,10 +3,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/organisms/item_list_tile.dart';
-import 'package:idz/pages/home/home_page_controller.dart';
-import 'package:idz/pages/home/models.dart';
-import 'package:idz/routes/app_pages.dart';
+import 'package:peeker/components/organisms/item_list_tile.dart';
+import 'package:peeker/pages/home/home_page_controller.dart';
+import 'package:peeker/pages/home/models.dart';
+import 'package:peeker/routes/app_pages.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 class HomePage extends StatelessWidget {

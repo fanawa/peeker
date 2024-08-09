@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:idz/pages/setting/setting_page_controller.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
+import 'package:peeker/pages/setting/setting_page_controller.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
 
 class SettingPageBinding extends Bindings {
   @override
