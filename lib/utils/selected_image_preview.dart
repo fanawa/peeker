@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/atoms/custom_circular_progress_indicator.dart';
-import 'package:idz/themes/light_theme.dart';
+import 'package:peeker/components/atoms/custom_circular_progress_indicator.dart';
+import 'package:peeker/themes/light_theme.dart';
 
 /// 選択した画像のプレビュー
 class SelectedImagePreview {

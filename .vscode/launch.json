@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "idz",
+      "name": "peeker",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "idz (profile mode)",
+      "name": "peeker (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "idz (release mode)",
+      "name": "peeker (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/templates/item_information_form.dart';
-import 'package:idz/model/isar/isar_model.dart';
-import 'package:idz/pages/edit_item/edit_item_controller.dart';
-import 'package:idz/pages/home/models.dart';
-import 'package:idz/routes/app_pages.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:peeker/components/templates/item_information_form.dart';
+import 'package:peeker/model/isar/isar_model.dart';
+import 'package:peeker/pages/edit_item/edit_item_controller.dart';
+import 'package:peeker/pages/home/models.dart';
+import 'package:peeker/routes/app_pages.dart';
 
 class EditItemPage extends StatelessWidget {
   EditItemPage({super.key});

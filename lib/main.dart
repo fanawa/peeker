@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:idz/bindings/initial_bindings.dart';
-import 'package:idz/routes/app_pages.dart';
-import 'package:idz/themes/light_theme.dart';
+import 'package:peeker/bindings/initial_bindings.dart';
+import 'package:peeker/routes/app_pages.dart';
+import 'package:peeker/themes/light_theme.dart';
 
 String _initialRoute = Routes.Auth;
 

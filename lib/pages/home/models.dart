@@ -1,4 +1,4 @@
-import 'package:idz/model/isar/isar_model.dart';
+import 'package:peeker/model/isar/isar_model.dart';
 
 class ItemData {
   ItemData({

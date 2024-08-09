@@ -1,20 +1,21 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
-import 'package:idz/model/isar/isar_model.dart';
-import 'package:idz/pages/home/models.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
-import 'package:idz/providers/isar_provider.dart';
-import 'package:idz/utils/environment_variables.dart';
-import 'package:idz/utils/image_selector.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:peeker/model/isar/isar_model.dart';
+import 'package:peeker/pages/home/models.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
+import 'package:peeker/providers/isar_provider.dart';
+import 'package:peeker/utils/environment_variables.dart';
+import 'package:peeker/utils/image_selector.dart';
 
 class EditItemPageController extends GetxController {
   final TopPageController controller = Get.find();
@@ -137,7 +138,7 @@ class EditItemPageController extends GetxController {
   Future<String?> saveImageToFileSystem(XFile imageData) async {
     try {
       final String fileName =
-          'IDz_image_${DateTime.now().millisecondsSinceEpoch}.png';
+          'PEEKER_image_${DateTime.now().millisecondsSinceEpoch}.png';
       final String storePath = (await getApplicationDocumentsDirectory()).path;
       final String imagePath = '$storePath/$fileName';
       await imageData.saveTo(imagePath);

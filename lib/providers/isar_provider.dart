@@ -1,15 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:idz/model/isar/isar_model.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:peeker/model/isar/isar_model.dart';
 
 Future<Isar> isarProvider({String? dirPath}) async {
   const FlutterSecureStorage storage = FlutterSecureStorage();
   final String? deviceId = await storage.read(key: 'deviceId');
-  final String instanceName = 'IDz_$deviceId';
+  final String instanceName = 'PEEKER_$deviceId';
 
+  debugPrint('deviceId: $deviceId');
   Isar? isar = Isar.getInstance(instanceName);
 
   if (isar != null) {
@@ -18,7 +20,7 @@ Future<Isar> isarProvider({String? dirPath}) async {
 
   final Directory defaultDir = await getApplicationDocumentsDirectory();
   isar = await Isar.open(
-    name: 'IDz_',
+    name: instanceName,
     inspector: true,
     <CollectionSchema<dynamic>>[
       ItemSchema,

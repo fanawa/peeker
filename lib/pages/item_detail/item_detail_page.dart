@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/templates/tel_error_dialog.dart';
-import 'package:idz/model/isar/isar_model.dart';
-import 'package:idz/pages/home/models.dart';
-import 'package:idz/pages/item_detail/item_detail_controller.dart';
-import 'package:idz/routes/app_pages.dart';
+import 'package:peeker/components/templates/tel_error_dialog.dart';
+import 'package:peeker/model/isar/isar_model.dart';
+import 'package:peeker/pages/home/models.dart';
+import 'package:peeker/pages/item_detail/item_detail_controller.dart';
+import 'package:peeker/routes/app_pages.dart';
 
 class ItemDetailPage extends StatelessWidget {
   const ItemDetailPage({super.key});

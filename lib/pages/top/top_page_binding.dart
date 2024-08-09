@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
-import 'package:idz/service/manage_tab_service.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
+import 'package:peeker/service/manage_tab_service.dart';
 
 class TopPageBinding extends Bindings {
   @override

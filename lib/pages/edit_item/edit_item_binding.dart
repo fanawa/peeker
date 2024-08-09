@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:idz/pages/edit_item/edit_item_controller.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
+import 'package:peeker/pages/edit_item/edit_item_controller.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
 
 class EditItemPageBinding extends Bindings {
   @override

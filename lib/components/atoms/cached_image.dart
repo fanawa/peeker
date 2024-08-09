@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/widgets.dart';
-import 'package:idz/components/atoms/custom_circular_progress_indicator.dart';
+import 'package:peeker/components/atoms/custom_circular_progress_indicator.dart';
 
 class CachedImage extends StatelessWidget {
   const CachedImage({
