@@ -1,5 +1,5 @@
-import 'package:idz/model/isar/base.dart';
 import 'package:isar/isar.dart';
+import 'package:peeker/model/isar/base.dart';
 
 part 'isar_model.g.dart';
 

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:idz/components/atoms/custom_circular_progress_indicator.dart';
+import 'package:peeker/components/atoms/custom_circular_progress_indicator.dart';
 
 class ItemInformationForm extends StatelessWidget {
   ItemInformationForm({

@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.idz">
+    package="com.example.peeker">
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
    <application
-        android:label="idz"
+        android:label="peeker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

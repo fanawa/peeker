@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idz/themes/light_theme.dart';
+import 'package:peeker/themes/light_theme.dart';
 
 class CancelButton extends StatelessWidget {
   const CancelButton({

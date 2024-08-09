@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/pages/photo_view/photo_view_page_controller.dart';
+import 'package:peeker/pages/photo_view/photo_view_page_controller.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoViewPage extends StatelessWidget {

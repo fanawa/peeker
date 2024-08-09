@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:idz/routes/app_pages.dart';
-import 'package:idz/service/manage_tab_service.dart';
-import 'package:idz/utils/platform_information.dart';
+import 'package:peeker/routes/app_pages.dart';
+import 'package:peeker/service/manage_tab_service.dart';
+import 'package:peeker/utils/platform_information.dart';
 
 class TopPageController extends GetxController {
   TopPageController();

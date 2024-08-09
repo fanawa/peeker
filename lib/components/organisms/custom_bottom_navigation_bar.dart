@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:idz/pages/top/top_page_controller.dart';
-import 'package:idz/routes/app_pages.dart';
+import 'package:peeker/pages/top/top_page_controller.dart';
+import 'package:peeker/routes/app_pages.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({

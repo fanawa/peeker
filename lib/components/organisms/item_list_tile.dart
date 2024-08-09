@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:idz/pages/home/models.dart';
+import 'package:peeker/pages/home/models.dart';
 
 class ItemListTile extends StatelessWidget {
   const ItemListTile({
