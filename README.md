@@ -3,6 +3,7 @@
 - アプリ内データベースを使用するので、情報が外部漏洩するリスクが低いです。
 
 # 機能
+- 生体認証(作成済み、未実装 https://github.com/fanawa/peeker/pull/5)
 - ホーム画面 リスト/アイコン表示に切り替え可能
 - 詳細画面 登録した電話番号への発信、URLをブラウザ表示
 
@@ -15,3 +16,7 @@
 
 https://github.com/user-attachments/assets/befc1111-d480-48f7-afe9-161caf6b3b4c
 
+# 開発環境
+- Flutter/Dart
+- 状態管理: GetX
+- データベース: Isar
