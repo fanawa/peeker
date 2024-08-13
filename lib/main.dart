@@ -4,13 +4,7 @@ import 'package:peeker/bindings/initial_bindings.dart';
 import 'package:peeker/routes/app_pages.dart';
 import 'package:peeker/themes/light_theme.dart';
 
-String _initialRoute = Routes.TOP;
-
-//**
-// TODO(a): 
-// 顔認証成功時にdeviceIdを取得し、
-// FlutterSecureStorageの(key: 'deviceId')と同じならisarからデータ取得する
-// */
+String _initialRoute = Routes.Auth;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

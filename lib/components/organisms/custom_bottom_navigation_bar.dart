@@ -20,7 +20,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
         return NavigationBar(
           key: key,
           selectedIndex: currentIndex,
-          // currentIndex: currentIndex,
           onDestinationSelected: (int index) async {
             if (controller.currentIndex.value == index) {
               return;

@@ -9,8 +9,8 @@ part 'isar_model.g.dart';
    -------------------------- */
 @collection
 class Settings {
-  Id id = Isar.autoIncrement; // 自動インクリメントのID
-  bool isList = true; // デフォルトはリスト表示
+  Id id = Isar.autoIncrement;
+  bool isList = true;
 }
 
 /* --------------------------
