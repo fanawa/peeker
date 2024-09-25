@@ -7,7 +7,7 @@ import 'package:peeker/themes/light_theme.dart';
 String _initialRoute = Routes.TOP;
 
 //**
-// TODO(a): 
+// TODO(a):
 // 顔認証成功時にdeviceIdを取得し、
 // FlutterSecureStorageの(key: 'deviceId')と同じならisarからデータ取得する
 // */
@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      locale: const Locale('ja'),
       debugShowCheckedModeBanner: false,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
