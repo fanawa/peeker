@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:peeker/bindings/initial_bindings.dart';
 import 'package:peeker/routes/app_pages.dart';
@@ -12,9 +13,14 @@ String _initialRoute = Routes.TOP;
 // FlutterSecureStorageの(key: 'deviceId')と同じならisarからデータ取得する
 // */
 
-void main() {
+void main() async {
+  final WidgetsBinding widgetsBinding =
+      WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Future<void>.delayed(const Duration(seconds: 2));
   runApp(const MyApp());
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
