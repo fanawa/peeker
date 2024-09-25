@@ -1,8 +1,8 @@
 signingConfigs {
     release {
-        storeFile file("quick-release.keystore")
-        storePassword "quick919"
+        storeFile file("peeker-release.keystore")
+        storePassword "peeker"
         keyAlias "key"
-        keyPassword "quick919"
+        keyPassword "peeker"
     }
 }
