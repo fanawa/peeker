@@ -1,7 +1,7 @@
 {
   "nuxt.isNuxtApp": false,
-  "dart.sdkPath": "/User/fumi/.asdf/installs/flutter/3.16.7-stable",
-  "dart.flutterSdkPath": "/User/fumi/.asdf/installs/flutter/3.16.7-stable",
+  "dart.sdkPath": "/User/fumi/.asdf/installs/flutter/3.24.3-stable",
+  "dart.flutterSdkPath": "/User/fumi/.asdf/installs/flutter/3.24.3-stable",
   "cSpell.words": [
     "Admob",
     "ARGB",
