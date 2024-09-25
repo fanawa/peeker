@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   device_info_plus: ^9.1.1
   flutter_form_builder: ^9.1.0
+  flutter_launcher_icons: ^0.13.1
   flutter_platform_alert: ^0.4.0
   flutter_secure_storage: ^9.0.0
   flutter_slidable: ^3.1.1
@@ -70,3 +71,10 @@ flutter:
           weight: 200
         - asset: assets/fonts/NotoSansJP-Thin.ttf
           weight: 100
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: 'assets/images/icon-1024.png'
+  adaptive_icon_background: '#ffffff'
+  adaptive_icon_foreground: 'assets/images/icon-adaptive-1024.png'
