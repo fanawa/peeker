@@ -116,12 +116,9 @@ class ItemDetailPageController extends GetxController {
   }
 
   Future<void> accessWeb() async {
-    final String url = itemData.value!.item.url!;
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(
-        url,
-        mode: LaunchMode.externalApplication,
-      );
+    final Uri url = Uri.parse(itemData.value!.item.url!);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
     }
   }
 

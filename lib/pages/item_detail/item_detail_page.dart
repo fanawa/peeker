@@ -202,7 +202,7 @@ class ItemDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Wrap(
-                        spacing: 20, 
+                        spacing: 20,
                         children: <Widget>[
                           ...controller.itemData.value!.item.phoneNumbers
                               .toList()
@@ -227,19 +227,19 @@ class ItemDetailPage extends StatelessWidget {
                                       .phoneNumbers.isNotEmpty,
                                   child: FilledButton(
                                     style: ButtonStyle(
-                                        padding: MaterialStateProperty.all<
+                                        padding: WidgetStateProperty.all<
                                                 EdgeInsetsGeometry>(
                                             const EdgeInsets.only(left: 20)),
                                         fixedSize:
-                                            MaterialStateProperty.all<Size>(
+                                            WidgetStateProperty.all<Size>(
                                                 const Size.fromHeight(60)),
                                         foregroundColor:
-                                            MaterialStateProperty.all<Color>(
+                                            WidgetStateProperty.all<Color>(
                                                 Colors.blue),
                                         backgroundColor:
-                                            MaterialStateProperty.all<Color>(
+                                            WidgetStateProperty.all<Color>(
                                                 Colors.grey[100]!),
-                                        textStyle: MaterialStateProperty.all(
+                                        textStyle: WidgetStateProperty.all(
                                           const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
@@ -291,7 +291,7 @@ class ItemDetailPage extends StatelessWidget {
                                 ),
                               ],
                             );
-                          }).toList()
+                          })
                         ],
                       ),
                     ),
@@ -306,19 +306,19 @@ class ItemDetailPage extends StatelessWidget {
                         ),
                         child: FilledButton(
                           style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
+                              shape: WidgetStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
                               ),
-                              fixedSize: MaterialStateProperty.all<Size>(
+                              fixedSize: WidgetStateProperty.all<Size>(
                                   const Size.fromHeight(70)),
-                              foregroundColor: MaterialStateProperty.all<Color>(
+                              foregroundColor: WidgetStateProperty.all<Color>(
                                   Colors.lightBlue),
-                              backgroundColor: MaterialStateProperty.all<Color>(
+                              backgroundColor: WidgetStateProperty.all<Color>(
                                   Colors.grey[100]!),
-                              textStyle: MaterialStateProperty.all(
+                              textStyle: WidgetStateProperty.all(
                                 const TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
