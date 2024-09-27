@@ -162,7 +162,10 @@ class ItemInformationForm extends StatelessWidget {
                                 FormBuilderValidators.required(
                                   errorText: '必須項目です',
                                 ),
-                                FormBuilderValidators.maxLength(40)
+                                FormBuilderValidators.maxLength(
+                                  40,
+                                  errorText: '40文字以内にしてください',
+                                )
                               ],
                             ),
                             style: const TextStyle(
@@ -246,7 +249,10 @@ class ItemInformationForm extends StatelessWidget {
                           onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
-                              FormBuilderValidators.url(),
+                              FormBuilderValidators.url(
+                                checkNullOrEmpty: false,
+                                errorText: '無効なURLです',
+                              ),
                             ],
                           ),
                           style: const TextStyle(
@@ -288,7 +294,11 @@ class ItemInformationForm extends StatelessWidget {
                           onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
-                              FormBuilderValidators.maxLength(200)
+                              FormBuilderValidators.maxLength(
+                                200,
+                                checkNullOrEmpty: false,
+                                errorText: '200文字以内にしてください',
+                              )
                             ],
                           ),
                           style: const TextStyle(
@@ -346,7 +356,11 @@ class ItemInformationForm extends StatelessWidget {
                       },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
-                          FormBuilderValidators.maxLength(20),
+                          FormBuilderValidators.maxLength(
+                            20,
+                            checkNullOrEmpty: false,
+                            errorText: '20文字以内にしてください',
+                          ),
                         ],
                       ),
                       style: const TextStyle(
@@ -394,7 +408,11 @@ class ItemInformationForm extends StatelessWidget {
                       },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
-                          FormBuilderValidators.maxLength(20),
+                          FormBuilderValidators.maxLength(
+                            20,
+                            checkNullOrEmpty: false,
+                            errorText: '20文字以内にしてください',
+                          ),
                         ],
                       ),
                       style: const TextStyle(
