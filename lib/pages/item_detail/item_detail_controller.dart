@@ -12,7 +12,6 @@ import 'package:peeker/pages/top/top_page_controller.dart';
 import 'package:peeker/providers/isar_provider.dart';
 import 'package:peeker/routes/app_pages.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class ItemDetailPageController extends GetxController {
   final TopPageController topPageController = Get.find();
@@ -117,7 +116,10 @@ class ItemDetailPageController extends GetxController {
 
   Future<void> accessWeb() async {
     final Uri url = Uri.parse(itemData.value!.item.url!);
-    if (!await launchUrl(url)) {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
       throw Exception('Could not launch $url');
     }
   }
