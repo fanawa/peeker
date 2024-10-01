@@ -15,7 +15,7 @@ class TabRootPage extends StatelessWidget {
     return PopScope(
       key: GlobalKey(),
       canPop: false,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         final GlobalKey<NavigatorState> routeKey = Get.key;
         if (routeKey.currentState!.canPop()) {
           Navigator.of(context).pop();
