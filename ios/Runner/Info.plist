@@ -26,10 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>This app requires to add file to your camera</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires to access your photo library</string>
+  <key>NSCameraUsageDescription</key>
+  <string>このアプリはカメラを使用してファイルを追加します</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>このアプリは写真ライブラリにアクセスしてファイルを追加します</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
