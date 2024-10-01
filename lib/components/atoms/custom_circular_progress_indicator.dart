@@ -3,8 +3,7 @@ import 'package:peeker/themes/light_theme.dart';
 
 class CustomCircularProgressIndicator extends StatelessWidget {
   const CustomCircularProgressIndicator(
-      {Key? key, this.backgroundColor, this.foregroundColor, this.value})
-      : super(key: key);
+      {super.key, this.backgroundColor, this.foregroundColor, this.value});
 
   final Color? backgroundColor;
   final Color? foregroundColor;

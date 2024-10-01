@@ -5,9 +5,9 @@ import 'package:peeker/routes/app_pages.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
-  }) : super(key: key);
+  });
 
   final int currentIndex;
 

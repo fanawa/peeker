@@ -7,8 +7,8 @@ import 'package:photo_view/photo_view.dart';
 
 class PhotoViewPage extends StatelessWidget {
   const PhotoViewPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

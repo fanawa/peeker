@@ -3,12 +3,12 @@ import 'package:peeker/themes/light_theme.dart';
 
 class CancelButton extends StatelessWidget {
   const CancelButton({
-    Key? key,
+    super.key,
     this.backgroundColor,
     this.foregroundColor,
     this.size,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   final Color? backgroundColor;
   final Color? foregroundColor;

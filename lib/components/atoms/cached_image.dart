@@ -4,10 +4,10 @@ import 'package:peeker/components/atoms/custom_circular_progress_indicator.dart'
 
 class CachedImage extends StatelessWidget {
   const CachedImage({
-    Key? key,
+    super.key,
     required this.url,
     this.padding = const EdgeInsets.all(8),
-  }) : super(key: key);
+  });
 
   final String url;
   final EdgeInsetsGeometry padding;

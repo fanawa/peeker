@@ -4,9 +4,9 @@ import 'package:peeker/routes/app_pages.dart';
 
 class TabRootPage extends StatelessWidget {
   const TabRootPage({
-    Key? key,
+    super.key,
     required this.initialRoute,
-  }) : super(key: key);
+  });
 
   final String initialRoute;
 

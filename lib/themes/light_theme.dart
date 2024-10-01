@@ -68,9 +68,9 @@ ThemeData getLightTheme(BuildContext context) {
       ),
     ),
     checkboxTheme: CheckboxThemeData(
-      checkColor: MaterialStateProperty.all(primaryColor),
-      fillColor: MaterialStateProperty.all(Colors.white),
-      side: MaterialStateBorderSide.resolveWith(
+      checkColor: WidgetStateProperty.all(primaryColor),
+      fillColor: WidgetStateProperty.all(Colors.white),
+      side: WidgetStateBorderSide.resolveWith(
         (_) => const BorderSide(
           color: Colors.black54,
           width: 0.5,
@@ -99,7 +99,7 @@ ThemeData getLightTheme(BuildContext context) {
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      labelTextStyle: MaterialStateProperty.all(
+      labelTextStyle: WidgetStateProperty.all(
         const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -147,6 +147,6 @@ ThemeData getLightTheme(BuildContext context) {
     ),
     colorScheme: theme.colorScheme
         .copyWith(secondary: accentColor)
-        .copyWith(background: Colors.white),
+        .copyWith(surface: Colors.white),
   );
 }

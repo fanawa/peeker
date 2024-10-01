@@ -10,7 +10,7 @@ import 'package:peeker/routes/app_pages.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+  HomePage({super.key});
 
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey();
 

@@ -75,8 +75,10 @@ class SelectedImagePreview {
                           if (!isLoading.value) {
                             isLoading.value = true;
                             await onPressedAdd?.call().then((void value) async {
-                              Navigator.pop(context);
-                              isLoading.value = false;
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                isLoading.value = false;
+                              }
                             });
                           }
                         },

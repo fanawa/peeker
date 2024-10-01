@@ -4,7 +4,7 @@ import 'package:peeker/pages/root/root_page.dart';
 import 'package:peeker/pages/top/top_page_controller.dart';
 
 class TopPage extends GetView<TopPageController> {
-  TopPage({Key? key}) : super(key: key);
+  TopPage({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
