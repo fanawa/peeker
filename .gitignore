@@ -57,3 +57,6 @@ ios/configs/ExportOptions*.plist
 
 # xcode env
 ios/Flutter/env.xcconfig
+
+*.jks
+*.pem
