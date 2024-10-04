@@ -5,11 +5,11 @@ import 'package:peeker/pages/home/models.dart';
 
 class ItemListTile extends StatelessWidget {
   const ItemListTile({
-    Key? key,
+    super.key,
     required this.itemData,
     this.onTap,
     this.isList = true,
-  }) : super(key: key);
+  });
 
   final ItemData itemData;
   final VoidCallback? onTap;

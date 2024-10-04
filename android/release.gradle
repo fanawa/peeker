@@ -1,8 +1,8 @@
 signingConfigs {
     release {
-        storeFile file("peeker-release.keystore")
-        storePassword "peeker"
+        storeFile file("key.jks")
+        storePassword "peeker59"
         keyAlias "key"
-        keyPassword "peeker"
+        keyPassword "peeker59"
     }
 }

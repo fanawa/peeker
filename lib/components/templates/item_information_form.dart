@@ -5,10 +5,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:peeker/components/atoms/custom_circular_progress_indicator.dart';
+import 'package:peeker/pages/photo_view/photo_view_page.dart';
 
 class ItemInformationForm extends StatelessWidget {
   ItemInformationForm({
-    Key? key,
+    super.key,
     required this.fbKey,
     this.previewPicturePaths,
     required this.onTapCancel,
@@ -23,7 +24,7 @@ class ItemInformationForm extends StatelessWidget {
     this.contactFields,
     this.onPressRemove,
     this.onPressAdd,
-  }) : super(key: key);
+  });
   final GlobalKey<FormBuilderState> fbKey;
   final List<String>? previewPicturePaths;
   final VoidCallback onTapCancel;
@@ -64,46 +65,71 @@ class ItemInformationForm extends StatelessWidget {
                   itemCount: previewPicturePaths?.length ?? 1,
                   itemBuilder: (BuildContext context, int index) {
                     final String? path = previewPicturePaths?[index];
-                    return GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: const Text(
-                                'この画像を削除しますか？',
-                                textAlign: TextAlign.center,
-                              ),
-                              actions: <Widget>[
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: const Text('キャンセル'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        onTapRemoveImage(index);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('削除'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
+
+                    // 画像が表示される部分
+                    return Stack(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            if (path != null && path.isNotEmpty) {
+                              Get.to(() => const PhotoViewPage(),
+                                  arguments: path);
+                            }
                           },
-                        );
-                      },
-                      child: path == null || path == ''
-                          ? Container(color: Colors.grey[100])
-                          : Image.file(
-                              File(path),
-                              fit: BoxFit.fill,
+                          child: path == null || path == ''
+                              ? Container(color: Colors.grey[100])
+                              : Image.file(
+                                  File(path),
+                                  fit: BoxFit.fill,
+                                ),
+                        ),
+                        Positioned(
+                          top: -10,
+                          right: -10,
+                          // left: 53,
+                          // bottom: 53,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.remove_circle_rounded,
+                              color: Colors.red,
+                              size: 30,
                             ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: const Text(
+                                      'この画像を削除しますか？',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    actions: <Widget>[
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('キャンセル'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              onTapRemoveImage(index);
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('削除'),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -121,7 +147,7 @@ class ItemInformationForm extends StatelessWidget {
               FilledButton.tonalIcon(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.grey[100]!),
+                      WidgetStateProperty.all<Color>(Colors.grey[100]!),
                 ),
                 icon: const Icon(Icons.add),
                 label: const Text('写真を追加'),
@@ -162,7 +188,10 @@ class ItemInformationForm extends StatelessWidget {
                                 FormBuilderValidators.required(
                                   errorText: '必須項目です',
                                 ),
-                                FormBuilderValidators.maxLength(40)
+                                FormBuilderValidators.maxLength(
+                                  40,
+                                  errorText: '40文字以内にしてください',
+                                )
                               ],
                             ),
                             style: const TextStyle(
@@ -246,7 +275,10 @@ class ItemInformationForm extends StatelessWidget {
                           onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
-                              FormBuilderValidators.url(),
+                              FormBuilderValidators.url(
+                                checkNullOrEmpty: false,
+                                errorText: '無効なURLです',
+                              ),
                             ],
                           ),
                           style: const TextStyle(
@@ -288,7 +320,11 @@ class ItemInformationForm extends StatelessWidget {
                           onChanged: onChanged,
                           validator: FormBuilderValidators.compose(
                             <FormFieldValidator<String?>>[
-                              FormBuilderValidators.maxLength(200)
+                              FormBuilderValidators.maxLength(
+                                200,
+                                checkNullOrEmpty: false,
+                                errorText: '200文字以内にしてください',
+                              )
                             ],
                           ),
                           style: const TextStyle(
@@ -346,7 +382,11 @@ class ItemInformationForm extends StatelessWidget {
                       },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
-                          FormBuilderValidators.maxLength(20),
+                          FormBuilderValidators.maxLength(
+                            20,
+                            checkNullOrEmpty: false,
+                            errorText: '20文字以内にしてください',
+                          ),
                         ],
                       ),
                       style: const TextStyle(
@@ -394,7 +434,11 @@ class ItemInformationForm extends StatelessWidget {
                       },
                       validator: FormBuilderValidators.compose(
                         <FormFieldValidator<String?>>[
-                          FormBuilderValidators.maxLength(20),
+                          FormBuilderValidators.maxLength(
+                            20,
+                            checkNullOrEmpty: false,
+                            errorText: '20文字以内にしてください',
+                          ),
                         ],
                       ),
                       style: const TextStyle(

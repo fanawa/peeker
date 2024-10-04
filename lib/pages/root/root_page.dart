@@ -4,9 +4,9 @@ import 'package:peeker/routes/app_pages.dart';
 
 class TabRootPage extends StatelessWidget {
   const TabRootPage({
-    Key? key,
+    super.key,
     required this.initialRoute,
-  }) : super(key: key);
+  });
 
   final String initialRoute;
 
@@ -15,7 +15,7 @@ class TabRootPage extends StatelessWidget {
     return PopScope(
       key: GlobalKey(),
       canPop: false,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         final GlobalKey<NavigatorState> routeKey = Get.key;
         if (routeKey.currentState!.canPop()) {
           Navigator.of(context).pop();

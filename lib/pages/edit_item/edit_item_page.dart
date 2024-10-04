@@ -93,7 +93,7 @@ class EditItemPage extends StatelessWidget {
                           final List<Map<String, dynamic>> extractedContacts =
                               <Map<String, dynamic>>[];
                           for (int index = 0;
-                              index < controller.contactFields!.length;
+                              index < controller.contactFields.length;
                               index++) {
                             final String contactName = _fbKey
                                 .currentState!.value['contactName_$index']

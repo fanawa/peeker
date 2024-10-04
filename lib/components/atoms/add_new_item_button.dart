@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CreateItemButton extends StatelessWidget {
   const CreateItemButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
 

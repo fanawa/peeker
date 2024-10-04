@@ -1,4 +1,4 @@
-package com.example.peeker
+package com.quick.peeker
 
 import io.flutter.embedding.android.FlutterActivity
 

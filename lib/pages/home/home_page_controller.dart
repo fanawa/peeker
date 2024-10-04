@@ -29,7 +29,7 @@ class HomePageController extends GetxController {
 
   Future<void> loadSettings() async {
     final Isar isar = await isarProvider();
-    final settings = await isar.settings.where().findFirst();
+    final Settings? settings = await isar.settings.where().findFirst();
     if (settings != null) {
       isList.value = settings.isList;
     }
@@ -37,7 +37,8 @@ class HomePageController extends GetxController {
 
   Future<void> saveSettings() async {
     final Isar isar = await isarProvider();
-    final settings = await isar.settings.where().findFirst() ?? Settings();
+    final Settings settings =
+        await isar.settings.where().findFirst() ?? Settings();
     settings.isList = isList.value;
     await isar.writeTxn(() async {
       await isar.settings.put(settings);

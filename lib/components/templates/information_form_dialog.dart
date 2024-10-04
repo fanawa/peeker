@@ -72,7 +72,7 @@ class InformationFormDialog {
                         const SizedBox(height: 6),
                         FilledButton.tonalIcon(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
+                            backgroundColor: WidgetStateProperty.all<Color>(
                                 Colors.grey[100]!),
                           ),
                           icon: const Icon(Icons.add),
