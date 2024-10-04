@@ -101,10 +101,10 @@ class ItemDetailPageController extends GetxController {
     return false;
   }
 
-  Future<bool> call() async {
+  Future<bool> call(String phoneNumber) async {
     final Uri callLaunchUri = Uri(
       scheme: 'tel',
-      path: itemData.value!.item.phoneNumber,
+      path: phoneNumber,
     );
     final bool canLaunch = await canLaunchUrl(callLaunchUri);
     if (canLaunch) {

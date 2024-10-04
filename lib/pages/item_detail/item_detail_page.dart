@@ -221,7 +221,8 @@ class ItemDetailPage extends StatelessWidget {
                                       color: Colors.grey,
                                       thickness: 0.1,
                                     ),
-                                  ), // 連絡先間の区切り線
+                                  ),
+                                // 連絡先間の区切り線
                                 Visibility(
                                   visible: controller.itemData.value!.item
                                       .phoneNumbers.isNotEmpty,
@@ -271,8 +272,8 @@ class ItemDetailPage extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () async {
-                                      final bool result =
-                                          await controller.call();
+                                      final bool result = await controller
+                                          .call(phoneNumber.number);
                                       if (result == false) {
                                         if (context.mounted) {
                                           TelErrorDialog.show(
