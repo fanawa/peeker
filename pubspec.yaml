@@ -1,7 +1,7 @@
 name: peeker
 description: peeker app
 publish_to: 'none'
-version: 1.0.1+14
+version: 1.0.1+15
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   device_info_plus: ^10.1.2
   flutter_form_builder: ^9.1.0
+  flutter_inappwebview: ^6.1.4
   flutter_launcher_icons: ^0.14.1
   flutter_native_splash: ^2.4.1
   flutter_platform_alert: ^0.6.1

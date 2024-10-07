@@ -14,6 +14,14 @@ class HomePage extends StatelessWidget {
 
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey();
 
+  void _openPrivacyPolicy(BuildContext context) {
+    // プライバシーポリシー画面への遷移
+    Get.toNamed<void>(
+      Routes.PRIVACY_POLICY,
+      // id: NavManager.getNavigationRouteId(Routes.HOME),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _fbKey.currentState?.save();
@@ -29,12 +37,38 @@ class HomePage extends StatelessWidget {
               borderRadius: BorderRadius.zero,
             ),
             alignment: Alignment.topCenter,
-            padding: const EdgeInsets.only(top: 20),
-            child: Text(
-              '${controller.items.length.toString()}件',
-              style: const TextStyle(
-                fontSize: 16,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Spacer(),
+                Expanded(
+                  child: Text(
+                    '${controller.items.length.toString()}件',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    size: 32,
+                    color: Color.fromARGB(255, 203, 66, 66),
+                  ),
+                  onPressed: () async {
+                    final dynamic result = await Get.toNamed<dynamic>(
+                      Routes.CREATE_ITEM,
+                      id: NavManager.getNavigationRouteId(Routes.HOME),
+                    );
+                    if (result is bool) {
+                      await controller.fetchItemData().then((_) async {
+                        controller.update();
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           key: key,
@@ -51,26 +85,28 @@ class HomePage extends StatelessWidget {
                 ),
                 onPressed: () {
                   controller.isList.value = !controller.isList.value;
-                  controller.saveSettings(); // 状態を保存
+                  controller.saveSettings();
                 },
               ),
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(
-                  Icons.add,
-                  size: 30,
-                ),
-                onPressed: () async {
-                  final dynamic result = await Get.toNamed<dynamic>(
-                    Routes.CREATE_ITEM,
-                    id: NavManager.getNavigationRouteId(Routes.HOME),
-                  );
-                  if (result is bool) {
-                    await controller.fetchItemData().then((_) async {
-                      controller.update();
-                    });
-                  }
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  showMenu(
+                    context: context,
+                    position: const RelativeRect.fromLTRB(100, 80, 0, 0),
+                    items: <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'privacy_policy',
+                        child: Text('プライバシーポリシー'),
+                      ),
+                    ],
+                  ).then((String? value) {
+                    if (value == 'privacy_policy' && context.mounted) {
+                      _openPrivacyPolicy(context);
+                    }
+                  });
                 },
               ),
             ],
