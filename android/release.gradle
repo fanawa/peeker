@@ -1,8 +1,0 @@
-signingConfigs {
-    release {
-        storeFile file("key.jks")
-        storePassword "peeker59"
-        keyAlias "key"
-        keyPassword "peeker59"
-    }
-}
